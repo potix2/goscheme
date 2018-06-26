@@ -1,0 +1,119 @@
+state 0 //
+
+    0 $accept: . expr
+
+    '('     shift, and goto state 5
+    IDENT   shift, and goto state 2
+    UINT10  shift, and goto state 3
+
+    expr       goto state 1
+    proc_call  goto state 4
+
+state 1 // IDENT [$end]
+
+    0 $accept: expr .  [$end]
+
+    $end  accept
+
+state 2 // IDENT
+
+    1 expr: IDENT .  [$end, '(', ')', IDENT, UINT10]
+
+    $end    reduce using rule 1 (expr)
+    '('     reduce using rule 1 (expr)
+    ')'     reduce using rule 1 (expr)
+    IDENT   reduce using rule 1 (expr)
+    UINT10  reduce using rule 1 (expr)
+
+state 3 // UINT10
+
+    2 expr: UINT10 .  [$end, '(', ')', IDENT, UINT10]
+
+    $end    reduce using rule 2 (expr)
+    '('     reduce using rule 2 (expr)
+    ')'     reduce using rule 2 (expr)
+    IDENT   reduce using rule 2 (expr)
+    UINT10  reduce using rule 2 (expr)
+
+state 4 // '(' IDENT ')' [$end]
+
+    3 expr: proc_call .  [$end, '(', ')', IDENT, UINT10]
+
+    $end    reduce using rule 3 (expr)
+    '('     reduce using rule 3 (expr)
+    ')'     reduce using rule 3 (expr)
+    IDENT   reduce using rule 3 (expr)
+    UINT10  reduce using rule 3 (expr)
+
+state 5 // '('
+
+    4 proc_call: '(' . expr ')'
+    5 proc_call: '(' . expr operands ')'
+
+    '('     shift, and goto state 5
+    IDENT   shift, and goto state 2
+    UINT10  shift, and goto state 3
+
+    expr       goto state 6
+    proc_call  goto state 4
+
+state 6 // '(' IDENT ['(']
+
+    4 proc_call: '(' expr . ')'
+    5 proc_call: '(' expr . operands ')'
+
+    '('     shift, and goto state 5
+    ')'     shift, and goto state 7
+    IDENT   shift, and goto state 2
+    UINT10  shift, and goto state 3
+
+    expr       goto state 9
+    operands   goto state 8
+    proc_call  goto state 4
+
+state 7 // '(' IDENT ')'
+
+    4 proc_call: '(' expr ')' .  [$end, '(', ')', IDENT, UINT10]
+
+    $end    reduce using rule 4 (proc_call)
+    '('     reduce using rule 4 (proc_call)
+    ')'     reduce using rule 4 (proc_call)
+    IDENT   reduce using rule 4 (proc_call)
+    UINT10  reduce using rule 4 (proc_call)
+
+state 8 // '(' IDENT IDENT [')']
+
+    5 proc_call: '(' expr operands . ')'
+
+    ')'  shift, and goto state 11
+
+state 9 // '(' IDENT IDENT ['(']
+
+    6 operands: expr .  [')']
+    7 operands: expr . operands
+
+    '('     shift, and goto state 5
+    ')'     reduce using rule 6 (operands)
+    IDENT   shift, and goto state 2
+    UINT10  shift, and goto state 3
+
+    expr       goto state 9
+    operands   goto state 10
+    proc_call  goto state 4
+
+state 10 // '(' IDENT IDENT IDENT [')']
+
+    7 operands: expr operands .  [')']
+
+    ')'  reduce using rule 7 (operands)
+
+state 11 // '(' IDENT IDENT ')'
+
+    5 proc_call: '(' expr operands ')' .  [$end, '(', ')', IDENT, UINT10]
+
+    $end    reduce using rule 5 (proc_call)
+    '('     reduce using rule 5 (proc_call)
+    ')'     reduce using rule 5 (proc_call)
+    IDENT   reduce using rule 5 (proc_call)
+    UINT10  reduce using rule 5 (proc_call)
+
