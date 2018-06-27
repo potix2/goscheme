@@ -7,20 +7,20 @@ import (
 
 func TestSimple(t *testing.T) {
 	env := NewEnv()
-	e, err := env.Lookup("a")
+	e, err := Lookup(env, "a")
 	if err == nil && e != nil {
 		t.Fatalf("error: %#v", e)
 	}
-	env.SetVariable("a", ast.Uint10Expr{Lit: 10})
-	e, err = env.Lookup("a")
+	env.Bind("a", ast.Uint10Expr{Lit: 10})
+	e, err = Lookup(env, "a")
 	if ue, ok := e.(ast.Uint10Expr); ok {
 		if ue.Lit != 10 {
 			t.Fatalf("found unexpected variable: %#v\n", ue)
 		}
 	}
 
-	env.Extend(map[string]ast.Expr{"a": ast.Uint10Expr{Lit: 20}})
-	e, err = env.Lookup("a")
+	env = Extend(env, map[string]ast.Expr{"a": ast.Uint10Expr{Lit: 20}})
+	e, err = Lookup(env, "a")
 	if ue, ok := e.(ast.Uint10Expr); ok {
 		if ue.Lit != 20 {
 			t.Fatalf("found unexpected variable: %#v\n", ue)

@@ -36,6 +36,31 @@ func TestSingleLineScan(t *testing.T) {
 			Token{-1, "", Position{1, 12}},
 		},
 		},
+		{input: "#t", expected: []Token{
+			Token{BOOLEAN, "true", Position{1, 1}},
+			Token{-1, "", Position{1, 3}},
+		},
+		},
+		{input: "'a", expected: []Token{
+			Token{int('\''), "'", Position{1, 1}},
+			Token{IDENT, "a", Position{1, 2}},
+			Token{-1, "", Position{1, 3}},
+		},
+		},
+		{input: "#false", expected: []Token{
+			Token{BOOLEAN, "false", Position{1, 1}},
+			Token{-1, "", Position{1, 7}},
+		},
+		},
+		{input: "(+ b ;'a\n10)", expected: []Token{
+			Token{int('('), "(", Position{1, 1}},
+			Token{IDENT, "+", Position{1, 2}},
+			Token{IDENT, "b", Position{1, 4}},
+			Token{UINT10, "10", Position{2, 1}},
+			Token{int(')'), ")", Position{2, 3}},
+			Token{-1, "", Position{2, 4}},
+		},
+		},
 	}
 
 	for _, tt := range tests {

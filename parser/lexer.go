@@ -84,11 +84,17 @@ func (s *Scanner) Scan() (tok int, lit string, pos Position, err error) {
 			return
 		}
 		tok = IDENT
+	case isBoolean(ch1, ch2):
+		lit, err = s.scanBoolean()
+		if err != nil {
+			return
+		}
+		tok = BOOLEAN
 	default:
 		switch ch1 {
 		case -1:
 			tok = EOF
-		case '(', ')':
+		case '(', ')', '\'', '.':
 			tok = int(ch1)
 			lit = string(ch1)
 		}
@@ -142,6 +148,9 @@ func isNumber(ch1 rune, ch2 rune, ch3 rune) bool {
 	}
 }
 
+func isBoolean(ch1 rune, ch2 rune) bool { return ch1 == '#' && (ch2 == 't' || ch2 == 'f') }
+func isLineComment(ch rune) bool        { return ch == ';' }
+
 //func isSpecialChar(ch rune) bool { return ch == '#' }
 
 func (s *Scanner) peek() rune {
@@ -188,6 +197,17 @@ func (s *Scanner) skipBrank() {
 	for isBrank(s.peek()) {
 		s.next()
 	}
+
+	if isLineComment(s.peek()) {
+		s.skipLineComment()
+	}
+}
+
+func (s *Scanner) skipLineComment() {
+	for s.peek() != '\n' {
+		s.next()
+	}
+	s.next()
 }
 
 func (s *Scanner) back() {
@@ -270,12 +290,36 @@ func (s *Scanner) scanUint() (lit string, err error) {
 	return string(ret), nil
 }
 
+func (s *Scanner) scanBoolean() (lit string, err error) {
+	if s.peek() != '#' {
+		return "", &Error{Message: "invalid state of lexer", Pos: s.pos(), Fatal: false}
+	}
+	s.next()
+
+	var buf []rune
+	for isLetter(s.peek()) {
+		buf = append(buf, s.peek())
+		s.next()
+	}
+
+	ret := string(buf)
+	switch ret {
+	case "t", "true":
+		return "true", nil
+	case "f", "false":
+		return "false", nil
+	default:
+		return "", &Error{Message: "syntax error", Pos: s.pos(), Fatal: false}
+	}
+}
+
 type Lexer struct {
-	s    *Scanner
-	lit  string
-	pos  Position
-	e    error
-	expr ast.Expr
+	s     *Scanner
+	lit   string
+	pos   Position
+	e     error
+	expr  ast.Expr
+	exprs []ast.Expr
 }
 
 func (l *Lexer) Lex(lval *yySymType) int {
@@ -294,15 +338,15 @@ func (l *Lexer) Error(e string) {
 	l.e = &Error{Message: e, Pos: l.pos, Fatal: false}
 }
 
-func Parse(s *Scanner) (ast.Expr, error) {
-	l := Lexer{s: s}
+func Parse(s *Scanner) ([]ast.Expr, error) {
+	l := Lexer{s: s, exprs: []ast.Expr{}}
 	if yyParse(&l) != 0 {
 		return nil, l.e
 	}
-	return l.expr, l.e
+	return l.exprs, l.e
 }
 
-func Read(src string) (ast.Expr, error) {
+func Read(src string) ([]ast.Expr, error) {
 	scanner := &Scanner{
 		src: []rune(src),
 	}
