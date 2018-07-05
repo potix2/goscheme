@@ -22,7 +22,7 @@ func TestSingleLineScan(t *testing.T) {
 			Token{int('('), "(", Position{1, 1}},
 			Token{IDENT, "+", Position{1, 2}},
 			Token{IDENT, "b", Position{1, 4}},
-			Token{UINT10, "10", Position{1, 6}},
+			Token{NUMBER, "10", Position{1, 6}},
 			Token{int(')'), ")", Position{1, 8}},
 			Token{-1, "", Position{1, 9}},
 		},
@@ -56,9 +56,24 @@ func TestSingleLineScan(t *testing.T) {
 			Token{int('('), "(", Position{1, 1}},
 			Token{IDENT, "+", Position{1, 2}},
 			Token{IDENT, "b", Position{1, 4}},
-			Token{UINT10, "10", Position{2, 1}},
+			Token{NUMBER, "10", Position{2, 1}},
 			Token{int(')'), ")", Position{2, 3}},
 			Token{-1, "", Position{2, 4}},
+		},
+		},
+		{input: ".12", expected: []Token{
+			Token{NUMBER, ".12", Position{1, 1}},
+			Token{-1, "", Position{1, 4}},
+		},
+		},
+		{input: "1.2", expected: []Token{
+			Token{NUMBER, "1.2", Position{1, 1}},
+			Token{-1, "", Position{1, 4}},
+		},
+		},
+		{input: "1/2", expected: []Token{
+			Token{NUMBER, "1/2", Position{1, 1}},
+			Token{-1, "", Position{1, 4}},
 		},
 		},
 	}
@@ -72,10 +87,10 @@ func TestSingleLineScan(t *testing.T) {
 				t.Errorf("error: %v", err)
 			}
 			if tok != e.Tok {
-				t.Errorf("token: actual %v, expected %v\n", tok, e.Tok)
+				t.Errorf("token: actual %v, expected %v (line=%d col=%d)\n", tok, e.Tok, pos.Line, pos.Column)
 			}
 			if lit != e.Lit {
-				t.Errorf("literal: actual %v, expected %v\n", lit, e.Lit)
+				t.Errorf("literal: actual %v, expected %v (line=%d col=%d)\n", lit, e.Lit, pos.Line, pos.Column)
 			}
 			if pos != e.Pos {
 				t.Errorf("pos: actual %v, expected %v\n", pos, e.Pos)

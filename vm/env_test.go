@@ -11,18 +11,18 @@ func TestSimple(t *testing.T) {
 	if err == nil && e != nil {
 		t.Fatalf("error: %#v", e)
 	}
-	env.Bind("a", ast.Uint10Expr{Lit: 10})
+	env.Bind("a", ast.IntNum(10))
 	e, err = Lookup(env, "a")
-	if ue, ok := e.(ast.Uint10Expr); ok {
-		if ue.Lit != 10 {
+	if ue, ok := e.(ast.IntNum); ok {
+		if ue != 10 {
 			t.Fatalf("found unexpected variable: %#v\n", ue)
 		}
 	}
 
-	env = Extend(env, map[string]ast.Expr{"a": ast.Uint10Expr{Lit: 20}})
+	env = Extend(env, map[string]ast.Expr{"a": ast.IntNum(20)})
 	e, err = Lookup(env, "a")
-	if ue, ok := e.(ast.Uint10Expr); ok {
-		if ue.Lit != 20 {
+	if ue, ok := e.(ast.IntNum); ok {
+		if ue != 20 {
 			t.Fatalf("found unexpected variable: %#v\n", ue)
 		}
 	}

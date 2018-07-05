@@ -2,7 +2,6 @@ package ast
 
 import (
 	"io"
-	"strconv"
 )
 
 type Env struct {
@@ -19,9 +18,6 @@ type PrimitiveProc func([]Expr) (Expr, error)
 type (
 	IdentExpr struct {
 		Lit string
-	}
-	Uint10Expr struct {
-		Lit int
 	}
 	BooleanExpr struct {
 		Lit bool
@@ -64,10 +60,6 @@ func MakeListFromSlice(exprs []Expr) PairExpr {
 
 func (x IdentExpr) Print(output io.Writer) {
 	output.Write([]byte(x.Lit))
-}
-
-func (x Uint10Expr) Print(output io.Writer) {
-	output.Write([]byte(strconv.Itoa(x.Lit)))
 }
 
 func (x BooleanExpr) Print(output io.Writer) {

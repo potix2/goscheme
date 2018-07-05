@@ -15,8 +15,11 @@ func SetupPrimitives(e *ast.Env) error {
 	e.Bind("*", makePrimitive("*", arithMul))
 	e.Bind("-", makePrimitive("-", arithSub))
 	e.Bind("/", makePrimitive("/", arithDiv))
-	e.Bind(">", makePrimitive(">", arithGreaterThan))
+	e.Bind("=", makePrimitive("=", arithEqual))
 	e.Bind("<", makePrimitive("<", arithLessThan))
+	e.Bind(">", makePrimitive(">", arithGreaterThan))
+	e.Bind("<=", makePrimitive("<=", arithLessThanEqual))
+	e.Bind(">=", makePrimitive(">=", arithGreaterThanEuqal))
 	e.Bind("number?", makePrimitive("number?", arithIsNumber))
 
 	//boolean operators

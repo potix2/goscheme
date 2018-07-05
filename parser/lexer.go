@@ -1,6 +1,8 @@
 package parser
 
 import (
+	"fmt"
+
 	"github.com/potix2/goscheme/ast"
 )
 
@@ -60,41 +62,80 @@ type Scanner struct {
 
 func (s *Scanner) Init(src string) {
 	s.src = []rune(src)
+	fmt.Printf("INIT: %s\n", src)
 }
 
 func (s *Scanner) Scan() (tok int, lit string, pos Position, err error) {
 	s.skipBrank()
 	pos = s.pos()
-	switch ch1, ch2, ch3 := s.peek3(); {
-	case isNumber(ch1, ch2, ch3):
-		lit, err = s.scanUint()
-		if err != nil {
-			return
-		}
-		tok = UINT10
-	case isInitial(ch1):
-		lit, err = s.scanIdent()
-		if err != nil {
-			return
-		}
-		tok = IDENT
-	case isPeculiarIdent(ch1, ch2):
-		lit, err = s.scanPeculiarIdent()
-		if err != nil {
-			return
-		}
-		tok = IDENT
+	switch ch1, ch2 := s.peek2(); {
 	case isBoolean(ch1, ch2):
 		lit, err = s.scanBoolean()
 		if err != nil {
 			return
 		}
 		tok = BOOLEAN
+	case ch1 == '#':
+		lit, err = s.scanNumber()
+		if err != nil {
+			return
+		}
+		tok = NUMBER
+	case ch1 == '.':
+		if isPeculiarIdent(ch1, ch2) {
+			lit, err = s.scanIdent()
+			if err != nil {
+				return
+			}
+			tok = IDENT
+		} else if isCharDelimiter(ch2) {
+			tok = int(ch1)
+			lit = string(ch1)
+			s.next()
+		} else {
+			lit, err = s.scanNumber()
+			if err != nil {
+				return
+			}
+			tok = NUMBER
+		}
+	case isSign(ch1):
+		if isPeculiarIdent(ch1, ch2) {
+			lit, err = s.scanIdent()
+			if err != nil {
+				return
+			}
+			tok = IDENT
+		} else if isCharDelimiter(ch2) {
+			lit, err = s.scanIdent()
+			if err != nil {
+				return
+			}
+			tok = IDENT
+		} else {
+			lit, err = s.scanNumber()
+			if err != nil {
+				return
+			}
+			tok = NUMBER
+		}
+	case isDigit(ch1):
+		lit, err = s.scanNumber()
+		if err != nil {
+			return
+		}
+		tok = NUMBER
+	case isInitial(ch1):
+		lit, err = s.scanIdent()
+		if err != nil {
+			return
+		}
+		tok = IDENT
 	default:
 		switch ch1 {
 		case -1:
 			tok = EOF
-		case '(', ')', '\'', '.':
+		case '(', ')', '\'', 'e', '+', '-', '/', '.':
 			tok = int(ch1)
 			lit = string(ch1)
 		}
@@ -113,6 +154,10 @@ func isSpecialSubsequent(ch rune) bool { return isSign(ch) || ch == '.' || ch ==
 func isDotSubsequent(ch rune) bool     { return isSignSubsequent(ch) || ch == '.' }
 func isIdent(ch rune) bool             { return isInitial(ch) || isDigit(ch) }
 func isInitial(ch rune) bool           { return isLetter(ch) || isSpecialSuffix(ch) }
+
+func isCharDelimiter(ch rune) bool {
+	return ch == '(' || ch == ')' || ch == '[' || ch == ']' || ch == '"' || ch == ';' || ch == '#' || isBrank(ch)
+}
 
 func isSpecialSuffix(ch rune) bool {
 	return ch == '!' ||
@@ -144,7 +189,7 @@ func isNumber(ch1 rune, ch2 rune, ch3 rune) bool {
 	} else if isSign(ch1) {
 		return isDigit(ch2) || ch2 == 'i' || ch2 == 'n' || (ch2 == '.' && isDigit(ch3))
 	} else {
-		return isDigit(ch1) || (ch1 == '.' && isDigit(ch2))
+		return isDigit(ch1) || ch1 == '.'
 	}
 }
 
@@ -161,28 +206,20 @@ func (s *Scanner) peek() rune {
 	}
 }
 
-func (s *Scanner) peek3() (rune, rune, rune) {
-	var ch1, ch2, ch3 rune
+func (s *Scanner) peek2() (rune, rune) {
+	var ch1, ch2 rune
 	ch1 = -1
 	ch2 = -1
-	ch3 = -1
 	ch1 = s.peek()
 	if ch1 == -1 {
-		return ch1, ch2, ch3
+		return ch1, ch2
 	}
 
 	s.next()
+
 	ch2 = s.peek()
-	if ch2 == -1 {
-		s.back()
-		return ch1, ch2, ch3
-	}
-
-	s.next()
-	ch3 = s.peek()
 	s.back()
-	s.back()
-	return ch1, ch2, ch3
+	return ch1, ch2
 }
 
 func (s *Scanner) reachEOF() bool {
@@ -276,17 +313,13 @@ func (s *Scanner) scanPeculiarIdent() (lit string, err error) {
 	return string(ret), nil
 }
 
-func (s *Scanner) scanUint() (lit string, err error) {
+func (s *Scanner) scanNumber() (lit string, err error) {
 	var ret []rune
-	if isSign(s.peek()) {
+	for !s.reachEOF() && !isCharDelimiter(s.peek()) {
 		ret = append(ret, s.peek())
 		s.next()
 	}
 
-	for isDigit(s.peek()) {
-		ret = append(ret, s.peek())
-		s.next()
-	}
 	return string(ret), nil
 }
 

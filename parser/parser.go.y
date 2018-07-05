@@ -12,10 +12,9 @@ import (
     tok   Token
 }
 
-%type<expr> expr proc_call quotation self_evaluating datum compound_datum identifier simple_datum bool number symbol command
+%type<expr> expr proc_call quotation self_evaluating datum compound_datum identifier simple_datum bool symbol command number
 %type<exprs> operands data commands program
-
-%token<tok> IDENT UINT10 BOOLEAN
+%token<tok> IDENT NUMBER BOOLEAN
 
 %%
 
@@ -39,7 +38,7 @@ commands:
 
 command: expr
 
-expr : identifier | quotation | self_evaluating | proc_call
+expr : quotation | self_evaluating | identifier | proc_call
 
 self_evaluating : bool | number
 
@@ -100,14 +99,11 @@ bool :
             if l, ok := yylex.(*Lexer); ok { l.expr = $$ }
         }
 
-number :
-        UINT10
-        {
-            lit, _ := strconv.Atoi($1.Lit)
-            $$ = ast.Uint10Expr{Lit: lit}
+number : NUMBER
+       {
+            $$ = ast.StringToNumber($1.Lit)
             if l, ok := yylex.(*Lexer); ok { l.expr = $$ }
-        }
-
+       }
 
 proc_call :
         '(' expr ')'

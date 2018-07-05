@@ -6,18 +6,18 @@ state 0 //
     '\''     shift, and goto state 11
     BOOLEAN  shift, and goto state 13
     IDENT    shift, and goto state 12
-    UINT10   shift, and goto state 14
+    NUMBER   shift, and goto state 14
 
     bool             goto state 9
     command          goto state 3
     commands         goto state 2
     expr             goto state 4
-    identifier       goto state 5
+    identifier       goto state 7
     number           goto state 10
     proc_call        goto state 8
     program          goto state 1
-    quotation        goto state 6
-    self_evaluating  goto state 7
+    quotation        goto state 5
+    self_evaluating  goto state 6
 
 state 1 // BOOLEAN [$end]
 
@@ -41,32 +41,32 @@ state 3 // BOOLEAN [$end]
     '\''     shift, and goto state 11
     BOOLEAN  shift, and goto state 13
     IDENT    shift, and goto state 12
-    UINT10   shift, and goto state 14
+    NUMBER   shift, and goto state 14
 
     bool             goto state 9
     command          goto state 3
     commands         goto state 38
     expr             goto state 4
-    identifier       goto state 5
+    identifier       goto state 7
     number           goto state 10
     proc_call        goto state 8
-    quotation        goto state 6
-    self_evaluating  goto state 7
+    quotation        goto state 5
+    self_evaluating  goto state 6
 
 state 4 // BOOLEAN [$end]
 
-    4 command: expr .  [$end, '(', '\'', BOOLEAN, IDENT, UINT10]
+    4 command: expr .  [$end, '(', '\'', BOOLEAN, IDENT, NUMBER]
 
     $end     reduce using rule 4 (command)
     '('      reduce using rule 4 (command)
     '\''     reduce using rule 4 (command)
     BOOLEAN  reduce using rule 4 (command)
     IDENT    reduce using rule 4 (command)
-    UINT10   reduce using rule 4 (command)
+    NUMBER   reduce using rule 4 (command)
 
-state 5 // IDENT [$end]
+state 5 // '\'' BOOLEAN [$end]
 
-    5 expr: identifier .  [$end, '(', ')', '\'', BOOLEAN, IDENT, UINT10]
+    5 expr: quotation .  [$end, '(', ')', '\'', BOOLEAN, IDENT, NUMBER]
 
     $end     reduce using rule 5 (expr)
     '('      reduce using rule 5 (expr)
@@ -74,11 +74,11 @@ state 5 // IDENT [$end]
     '\''     reduce using rule 5 (expr)
     BOOLEAN  reduce using rule 5 (expr)
     IDENT    reduce using rule 5 (expr)
-    UINT10   reduce using rule 5 (expr)
+    NUMBER   reduce using rule 5 (expr)
 
-state 6 // '\'' BOOLEAN [$end]
+state 6 // BOOLEAN [$end]
 
-    6 expr: quotation .  [$end, '(', ')', '\'', BOOLEAN, IDENT, UINT10]
+    6 expr: self_evaluating .  [$end, '(', ')', '\'', BOOLEAN, IDENT, NUMBER]
 
     $end     reduce using rule 6 (expr)
     '('      reduce using rule 6 (expr)
@@ -86,11 +86,11 @@ state 6 // '\'' BOOLEAN [$end]
     '\''     reduce using rule 6 (expr)
     BOOLEAN  reduce using rule 6 (expr)
     IDENT    reduce using rule 6 (expr)
-    UINT10   reduce using rule 6 (expr)
+    NUMBER   reduce using rule 6 (expr)
 
-state 7 // BOOLEAN [$end]
+state 7 // IDENT [$end]
 
-    7 expr: self_evaluating .  [$end, '(', ')', '\'', BOOLEAN, IDENT, UINT10]
+    7 expr: identifier .  [$end, '(', ')', '\'', BOOLEAN, IDENT, NUMBER]
 
     $end     reduce using rule 7 (expr)
     '('      reduce using rule 7 (expr)
@@ -98,11 +98,11 @@ state 7 // BOOLEAN [$end]
     '\''     reduce using rule 7 (expr)
     BOOLEAN  reduce using rule 7 (expr)
     IDENT    reduce using rule 7 (expr)
-    UINT10   reduce using rule 7 (expr)
+    NUMBER   reduce using rule 7 (expr)
 
 state 8 // '(' BOOLEAN ')' [$end]
 
-    8 expr: proc_call .  [$end, '(', ')', '\'', BOOLEAN, IDENT, UINT10]
+    8 expr: proc_call .  [$end, '(', ')', '\'', BOOLEAN, IDENT, NUMBER]
 
     $end     reduce using rule 8 (expr)
     '('      reduce using rule 8 (expr)
@@ -110,11 +110,11 @@ state 8 // '(' BOOLEAN ')' [$end]
     '\''     reduce using rule 8 (expr)
     BOOLEAN  reduce using rule 8 (expr)
     IDENT    reduce using rule 8 (expr)
-    UINT10   reduce using rule 8 (expr)
+    NUMBER   reduce using rule 8 (expr)
 
 state 9 // BOOLEAN [$end]
 
-    9 self_evaluating: bool .  [$end, '(', ')', '\'', BOOLEAN, IDENT, UINT10]
+    9 self_evaluating: bool .  [$end, '(', ')', '\'', BOOLEAN, IDENT, NUMBER]
 
     $end     reduce using rule 9 (self_evaluating)
     '('      reduce using rule 9 (self_evaluating)
@@ -122,11 +122,11 @@ state 9 // BOOLEAN [$end]
     '\''     reduce using rule 9 (self_evaluating)
     BOOLEAN  reduce using rule 9 (self_evaluating)
     IDENT    reduce using rule 9 (self_evaluating)
-    UINT10   reduce using rule 9 (self_evaluating)
+    NUMBER   reduce using rule 9 (self_evaluating)
 
-state 10 // UINT10 [$end]
+state 10 // NUMBER [$end]
 
-   10 self_evaluating: number .  [$end, '(', ')', '\'', BOOLEAN, IDENT, UINT10]
+   10 self_evaluating: number .  [$end, '(', ')', '\'', BOOLEAN, IDENT, NUMBER]
 
     $end     reduce using rule 10 (self_evaluating)
     '('      reduce using rule 10 (self_evaluating)
@@ -134,7 +134,7 @@ state 10 // UINT10 [$end]
     '\''     reduce using rule 10 (self_evaluating)
     BOOLEAN  reduce using rule 10 (self_evaluating)
     IDENT    reduce using rule 10 (self_evaluating)
-    UINT10   reduce using rule 10 (self_evaluating)
+    NUMBER   reduce using rule 10 (self_evaluating)
 
 state 11 // '\''
 
@@ -143,7 +143,7 @@ state 11 // '\''
     '('      shift, and goto state 28
     BOOLEAN  shift, and goto state 13
     IDENT    shift, and goto state 12
-    UINT10   shift, and goto state 14
+    NUMBER   shift, and goto state 14
 
     bool            goto state 25
     compound_datum  goto state 24
@@ -155,7 +155,7 @@ state 11 // '\''
 
 state 12 // IDENT
 
-   23 identifier: IDENT .  [$end, '(', ')', '.', '\'', BOOLEAN, IDENT, UINT10]
+   23 identifier: IDENT .  [$end, '(', ')', '.', '\'', BOOLEAN, IDENT, NUMBER]
 
     $end     reduce using rule 23 (identifier)
     '('      reduce using rule 23 (identifier)
@@ -164,11 +164,11 @@ state 12 // IDENT
     '\''     reduce using rule 23 (identifier)
     BOOLEAN  reduce using rule 23 (identifier)
     IDENT    reduce using rule 23 (identifier)
-    UINT10   reduce using rule 23 (identifier)
+    NUMBER   reduce using rule 23 (identifier)
 
 state 13 // BOOLEAN
 
-   24 bool: BOOLEAN .  [$end, '(', ')', '.', '\'', BOOLEAN, IDENT, UINT10]
+   24 bool: BOOLEAN .  [$end, '(', ')', '.', '\'', BOOLEAN, IDENT, NUMBER]
 
     $end     reduce using rule 24 (bool)
     '('      reduce using rule 24 (bool)
@@ -177,11 +177,11 @@ state 13 // BOOLEAN
     '\''     reduce using rule 24 (bool)
     BOOLEAN  reduce using rule 24 (bool)
     IDENT    reduce using rule 24 (bool)
-    UINT10   reduce using rule 24 (bool)
+    NUMBER   reduce using rule 24 (bool)
 
-state 14 // UINT10
+state 14 // NUMBER
 
-   25 number: UINT10 .  [$end, '(', ')', '.', '\'', BOOLEAN, IDENT, UINT10]
+   25 number: NUMBER .  [$end, '(', ')', '.', '\'', BOOLEAN, IDENT, NUMBER]
 
     $end     reduce using rule 25 (number)
     '('      reduce using rule 25 (number)
@@ -190,7 +190,7 @@ state 14 // UINT10
     '\''     reduce using rule 25 (number)
     BOOLEAN  reduce using rule 25 (number)
     IDENT    reduce using rule 25 (number)
-    UINT10   reduce using rule 25 (number)
+    NUMBER   reduce using rule 25 (number)
 
 state 15 // '('
 
@@ -201,15 +201,15 @@ state 15 // '('
     '\''     shift, and goto state 11
     BOOLEAN  shift, and goto state 13
     IDENT    shift, and goto state 12
-    UINT10   shift, and goto state 14
+    NUMBER   shift, and goto state 14
 
     bool             goto state 9
     expr             goto state 16
-    identifier       goto state 5
+    identifier       goto state 7
     number           goto state 10
     proc_call        goto state 8
-    quotation        goto state 6
-    self_evaluating  goto state 7
+    quotation        goto state 5
+    self_evaluating  goto state 6
 
 state 16 // '(' BOOLEAN ['(']
 
@@ -221,20 +221,20 @@ state 16 // '(' BOOLEAN ['(']
     '\''     shift, and goto state 11
     BOOLEAN  shift, and goto state 13
     IDENT    shift, and goto state 12
-    UINT10   shift, and goto state 14
+    NUMBER   shift, and goto state 14
 
     bool             goto state 9
     expr             goto state 19
-    identifier       goto state 5
+    identifier       goto state 7
     number           goto state 10
     operands         goto state 18
     proc_call        goto state 8
-    quotation        goto state 6
-    self_evaluating  goto state 7
+    quotation        goto state 5
+    self_evaluating  goto state 6
 
 state 17 // '(' BOOLEAN ')'
 
-   26 proc_call: '(' expr ')' .  [$end, '(', ')', '\'', BOOLEAN, IDENT, UINT10]
+   26 proc_call: '(' expr ')' .  [$end, '(', ')', '\'', BOOLEAN, IDENT, NUMBER]
 
     $end     reduce using rule 26 (proc_call)
     '('      reduce using rule 26 (proc_call)
@@ -242,7 +242,7 @@ state 17 // '(' BOOLEAN ')'
     '\''     reduce using rule 26 (proc_call)
     BOOLEAN  reduce using rule 26 (proc_call)
     IDENT    reduce using rule 26 (proc_call)
-    UINT10   reduce using rule 26 (proc_call)
+    NUMBER   reduce using rule 26 (proc_call)
 
 state 18 // '(' BOOLEAN BOOLEAN [')']
 
@@ -260,16 +260,16 @@ state 19 // '(' BOOLEAN BOOLEAN ['(']
     '\''     shift, and goto state 11
     BOOLEAN  shift, and goto state 13
     IDENT    shift, and goto state 12
-    UINT10   shift, and goto state 14
+    NUMBER   shift, and goto state 14
 
     bool             goto state 9
     expr             goto state 19
-    identifier       goto state 5
+    identifier       goto state 7
     number           goto state 10
     operands         goto state 20
     proc_call        goto state 8
-    quotation        goto state 6
-    self_evaluating  goto state 7
+    quotation        goto state 5
+    self_evaluating  goto state 6
 
 state 20 // '(' BOOLEAN BOOLEAN BOOLEAN [')']
 
@@ -279,7 +279,7 @@ state 20 // '(' BOOLEAN BOOLEAN BOOLEAN [')']
 
 state 21 // '(' BOOLEAN BOOLEAN ')'
 
-   27 proc_call: '(' expr operands ')' .  [$end, '(', ')', '\'', BOOLEAN, IDENT, UINT10]
+   27 proc_call: '(' expr operands ')' .  [$end, '(', ')', '\'', BOOLEAN, IDENT, NUMBER]
 
     $end     reduce using rule 27 (proc_call)
     '('      reduce using rule 27 (proc_call)
@@ -287,11 +287,11 @@ state 21 // '(' BOOLEAN BOOLEAN ')'
     '\''     reduce using rule 27 (proc_call)
     BOOLEAN  reduce using rule 27 (proc_call)
     IDENT    reduce using rule 27 (proc_call)
-    UINT10   reduce using rule 27 (proc_call)
+    NUMBER   reduce using rule 27 (proc_call)
 
 state 22 // '\'' BOOLEAN [$end]
 
-   11 quotation: '\'' datum .  [$end, '(', ')', '\'', BOOLEAN, IDENT, UINT10]
+   11 quotation: '\'' datum .  [$end, '(', ')', '\'', BOOLEAN, IDENT, NUMBER]
 
     $end     reduce using rule 11 (quotation)
     '('      reduce using rule 11 (quotation)
@@ -299,11 +299,11 @@ state 22 // '\'' BOOLEAN [$end]
     '\''     reduce using rule 11 (quotation)
     BOOLEAN  reduce using rule 11 (quotation)
     IDENT    reduce using rule 11 (quotation)
-    UINT10   reduce using rule 11 (quotation)
+    NUMBER   reduce using rule 11 (quotation)
 
 state 23 // '\'' BOOLEAN [$end]
 
-   12 datum: simple_datum .  [$end, '(', ')', '.', '\'', BOOLEAN, IDENT, UINT10]
+   12 datum: simple_datum .  [$end, '(', ')', '.', '\'', BOOLEAN, IDENT, NUMBER]
 
     $end     reduce using rule 12 (datum)
     '('      reduce using rule 12 (datum)
@@ -312,11 +312,11 @@ state 23 // '\'' BOOLEAN [$end]
     '\''     reduce using rule 12 (datum)
     BOOLEAN  reduce using rule 12 (datum)
     IDENT    reduce using rule 12 (datum)
-    UINT10   reduce using rule 12 (datum)
+    NUMBER   reduce using rule 12 (datum)
 
 state 24 // '\'' '(' ')' [$end]
 
-   13 datum: compound_datum .  [$end, '(', ')', '.', '\'', BOOLEAN, IDENT, UINT10]
+   13 datum: compound_datum .  [$end, '(', ')', '.', '\'', BOOLEAN, IDENT, NUMBER]
 
     $end     reduce using rule 13 (datum)
     '('      reduce using rule 13 (datum)
@@ -325,11 +325,11 @@ state 24 // '\'' '(' ')' [$end]
     '\''     reduce using rule 13 (datum)
     BOOLEAN  reduce using rule 13 (datum)
     IDENT    reduce using rule 13 (datum)
-    UINT10   reduce using rule 13 (datum)
+    NUMBER   reduce using rule 13 (datum)
 
 state 25 // '\'' BOOLEAN [$end]
 
-   14 simple_datum: bool .  [$end, '(', ')', '.', '\'', BOOLEAN, IDENT, UINT10]
+   14 simple_datum: bool .  [$end, '(', ')', '.', '\'', BOOLEAN, IDENT, NUMBER]
 
     $end     reduce using rule 14 (simple_datum)
     '('      reduce using rule 14 (simple_datum)
@@ -338,11 +338,11 @@ state 25 // '\'' BOOLEAN [$end]
     '\''     reduce using rule 14 (simple_datum)
     BOOLEAN  reduce using rule 14 (simple_datum)
     IDENT    reduce using rule 14 (simple_datum)
-    UINT10   reduce using rule 14 (simple_datum)
+    NUMBER   reduce using rule 14 (simple_datum)
 
-state 26 // '\'' UINT10 [$end]
+state 26 // '\'' NUMBER [$end]
 
-   15 simple_datum: number .  [$end, '(', ')', '.', '\'', BOOLEAN, IDENT, UINT10]
+   15 simple_datum: number .  [$end, '(', ')', '.', '\'', BOOLEAN, IDENT, NUMBER]
 
     $end     reduce using rule 15 (simple_datum)
     '('      reduce using rule 15 (simple_datum)
@@ -351,11 +351,11 @@ state 26 // '\'' UINT10 [$end]
     '\''     reduce using rule 15 (simple_datum)
     BOOLEAN  reduce using rule 15 (simple_datum)
     IDENT    reduce using rule 15 (simple_datum)
-    UINT10   reduce using rule 15 (simple_datum)
+    NUMBER   reduce using rule 15 (simple_datum)
 
 state 27 // '\'' IDENT [$end]
 
-   16 simple_datum: symbol .  [$end, '(', ')', '.', '\'', BOOLEAN, IDENT, UINT10]
+   16 simple_datum: symbol .  [$end, '(', ')', '.', '\'', BOOLEAN, IDENT, NUMBER]
 
     $end     reduce using rule 16 (simple_datum)
     '('      reduce using rule 16 (simple_datum)
@@ -364,7 +364,7 @@ state 27 // '\'' IDENT [$end]
     '\''     reduce using rule 16 (simple_datum)
     BOOLEAN  reduce using rule 16 (simple_datum)
     IDENT    reduce using rule 16 (simple_datum)
-    UINT10   reduce using rule 16 (simple_datum)
+    NUMBER   reduce using rule 16 (simple_datum)
 
 state 28 // '\'' '('
 
@@ -376,7 +376,7 @@ state 28 // '\'' '('
     ')'      shift, and goto state 30
     BOOLEAN  shift, and goto state 13
     IDENT    shift, and goto state 12
-    UINT10   shift, and goto state 14
+    NUMBER   shift, and goto state 14
 
     bool            goto state 25
     compound_datum  goto state 24
@@ -389,7 +389,7 @@ state 28 // '\'' '('
 
 state 29 // '\'' IDENT [$end]
 
-   22 symbol: identifier .  [$end, '(', ')', '.', '\'', BOOLEAN, IDENT, UINT10]
+   22 symbol: identifier .  [$end, '(', ')', '.', '\'', BOOLEAN, IDENT, NUMBER]
 
     $end     reduce using rule 22 (symbol)
     '('      reduce using rule 22 (symbol)
@@ -398,11 +398,11 @@ state 29 // '\'' IDENT [$end]
     '\''     reduce using rule 22 (symbol)
     BOOLEAN  reduce using rule 22 (symbol)
     IDENT    reduce using rule 22 (symbol)
-    UINT10   reduce using rule 22 (symbol)
+    NUMBER   reduce using rule 22 (symbol)
 
 state 30 // '\'' '(' ')'
 
-   17 compound_datum: '(' ')' .  [$end, '(', ')', '.', '\'', BOOLEAN, IDENT, UINT10]
+   17 compound_datum: '(' ')' .  [$end, '(', ')', '.', '\'', BOOLEAN, IDENT, NUMBER]
 
     $end     reduce using rule 17 (compound_datum)
     '('      reduce using rule 17 (compound_datum)
@@ -411,7 +411,7 @@ state 30 // '\'' '(' ')'
     '\''     reduce using rule 17 (compound_datum)
     BOOLEAN  reduce using rule 17 (compound_datum)
     IDENT    reduce using rule 17 (compound_datum)
-    UINT10   reduce using rule 17 (compound_datum)
+    NUMBER   reduce using rule 17 (compound_datum)
 
 state 31 // '\'' '(' BOOLEAN [')']
 
@@ -431,7 +431,7 @@ state 32 // '\'' '(' BOOLEAN ['(']
     '.'      reduce using rule 20 (data)
     BOOLEAN  shift, and goto state 13
     IDENT    shift, and goto state 12
-    UINT10   shift, and goto state 14
+    NUMBER   shift, and goto state 14
 
     bool            goto state 25
     compound_datum  goto state 24
@@ -451,7 +451,7 @@ state 33 // '\'' '(' BOOLEAN BOOLEAN [')']
 
 state 34 // '\'' '(' BOOLEAN ')'
 
-   18 compound_datum: '(' data ')' .  [$end, '(', ')', '.', '\'', BOOLEAN, IDENT, UINT10]
+   18 compound_datum: '(' data ')' .  [$end, '(', ')', '.', '\'', BOOLEAN, IDENT, NUMBER]
 
     $end     reduce using rule 18 (compound_datum)
     '('      reduce using rule 18 (compound_datum)
@@ -460,7 +460,7 @@ state 34 // '\'' '(' BOOLEAN ')'
     '\''     reduce using rule 18 (compound_datum)
     BOOLEAN  reduce using rule 18 (compound_datum)
     IDENT    reduce using rule 18 (compound_datum)
-    UINT10   reduce using rule 18 (compound_datum)
+    NUMBER   reduce using rule 18 (compound_datum)
 
 state 35 // '\'' '(' BOOLEAN '.'
 
@@ -469,7 +469,7 @@ state 35 // '\'' '(' BOOLEAN '.'
     '('      shift, and goto state 28
     BOOLEAN  shift, and goto state 13
     IDENT    shift, and goto state 12
-    UINT10   shift, and goto state 14
+    NUMBER   shift, and goto state 14
 
     bool            goto state 25
     compound_datum  goto state 24
@@ -487,7 +487,7 @@ state 36 // '\'' '(' BOOLEAN '.' BOOLEAN [')']
 
 state 37 // '\'' '(' BOOLEAN '.' BOOLEAN ')'
 
-   19 compound_datum: '(' data '.' datum ')' .  [$end, '(', ')', '.', '\'', BOOLEAN, IDENT, UINT10]
+   19 compound_datum: '(' data '.' datum ')' .  [$end, '(', ')', '.', '\'', BOOLEAN, IDENT, NUMBER]
 
     $end     reduce using rule 19 (compound_datum)
     '('      reduce using rule 19 (compound_datum)
@@ -496,7 +496,7 @@ state 37 // '\'' '(' BOOLEAN '.' BOOLEAN ')'
     '\''     reduce using rule 19 (compound_datum)
     BOOLEAN  reduce using rule 19 (compound_datum)
     IDENT    reduce using rule 19 (compound_datum)
-    UINT10   reduce using rule 19 (compound_datum)
+    NUMBER   reduce using rule 19 (compound_datum)
 
 state 38 // BOOLEAN BOOLEAN [$end]
 
