@@ -27,6 +27,7 @@ func runInteractive() {
 	scanner := bufio.NewScanner(os.Stdin)
 
 	env := vm.NewEnv()
+	vm.InitVM(env)
 	vm.SetupPrimitives(env)
 	for {
 		if !following {
@@ -92,6 +93,7 @@ func runFromFile(sourcePath string) {
 	logrus.Debug(code)
 
 	env := vm.NewEnv()
+	vm.InitVM(env)
 	vm.SetupPrimitives(env)
 	exprs, err := parser.Read(code)
 	if err != nil {

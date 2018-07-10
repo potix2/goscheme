@@ -46,6 +46,15 @@ type (
 		Operator string
 		Proc     PrimitiveProc
 	}
+	InputPort struct {
+		Reader io.Reader
+		Binary bool
+	}
+	OutputPort struct {
+		Writer io.Writer
+		Binary bool
+	}
+
 	Undefined struct {
 	}
 )
@@ -128,6 +137,14 @@ func (x PrimitiveProcExpr) Print(output io.Writer) {
 
 func (x Undefined) Print(output io.Writer) {
 	output.Write([]byte("#undef"))
+}
+
+func (x InputPort) Print(output io.Writer) {
+	output.Write([]byte("#<iport>"))
+}
+
+func (x OutputPort) Print(output io.Writer) {
+	output.Write([]byte("#<oport>"))
 }
 
 func (e *Env) Bind(name string, value Expr) {

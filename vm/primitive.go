@@ -8,7 +8,7 @@ func makePrimitive(op string, proc ast.PrimitiveProc) ast.PrimitiveProcExpr {
 	return ast.PrimitiveProcExpr{Operator: op, Proc: proc}
 }
 
-func SetupPrimitives(e *ast.Env) error {
+func SetupPrimitives(e *ast.Env) {
 
 	//arithmetic operators
 	e.Bind("+", makePrimitive("+", arithAdd))
@@ -37,5 +37,9 @@ func SetupPrimitives(e *ast.Env) error {
 	e.Bind("pair?", makePrimitive("pair?", listIsPair))
 	e.Bind("list?", makePrimitive("list?", listIsList))
 	e.Bind("null?", makePrimitive("null?", listIsNull))
-	return nil
+
+	//port
+	e.Bind("current-input-port", makePrimitive("current-input-port", portCurrentInputPort))
+	e.Bind("current-output-port", makePrimitive("current-output-port", portCurrentOutputPort))
+	e.Bind("current-error-port", makePrimitive("current-error-port", portCurrentErrorPort))
 }
