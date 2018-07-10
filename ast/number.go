@@ -7,6 +7,10 @@ import (
 	"strings"
 )
 
+const (
+	EPSILON RealNum = 0.00000001
+)
+
 type Number interface {
 	Add(Number) Number
 	Sub(Number) Number
@@ -63,7 +67,7 @@ func (x IntNum) Print(output io.Writer) {
 	output.Write([]byte(fmt.Sprintf("%d", x)))
 }
 
-func intToCompex(a IntNum) CompNum {
+func intToComplex(a IntNum) CompNum {
 	return CompNum(complex(float64(a), 0))
 }
 
@@ -76,7 +80,7 @@ func (x IntNum) Add(y Number) Number {
 	case RealNum:
 		return RealNum(x) + y.(RealNum)
 	case CompNum:
-		return intToCompex(x) + y.(CompNum)
+		return intToComplex(x) + y.(CompNum)
 	}
 	return NanValue
 }
@@ -94,7 +98,7 @@ func (x IntNum) Mul(y Number) Number {
 	case RealNum:
 		return RealNum(x) * y.(RealNum)
 	case CompNum:
-		return intToCompex(x) * y.(CompNum)
+		return intToComplex(x) * y.(CompNum)
 	default:
 		return IntNum(1) //TODO: return NAN
 	}
@@ -288,7 +292,7 @@ func (x CompNum) Print(output io.Writer) {
 func (x CompNum) Add(y Number) Number {
 	switch y.(type) {
 	case IntNum:
-		return x + intToCompex(y.(IntNum))
+		return x + intToComplex(y.(IntNum))
 	case RatNum:
 		return x + realToComplex(y.(RatNum).ToReal())
 	case RealNum:
@@ -306,7 +310,7 @@ func (x CompNum) Sub(y Number) Number {
 func (x CompNum) Mul(y Number) Number {
 	switch y.(type) {
 	case IntNum:
-		return x * intToCompex(y.(IntNum))
+		return x * intToComplex(y.(IntNum))
 	case RatNum:
 		return x * realToComplex(y.(RatNum).ToReal())
 	case RealNum:
@@ -386,4 +390,157 @@ func stringToNumberImpl(s string, radix int, exact bool) Number {
 		}
 		return IntNum(i)
 	}
+}
+
+func eqInt(a IntNum, b IntNum) bool {
+	return a == b
+}
+
+func eqReal(a RealNum, b RealNum) bool {
+	if (a-b) < EPSILON && (b-a) < EPSILON {
+		return true
+	}
+	return false
+}
+
+func eqRatnum(a RatNum, b RatNum) bool {
+	return a.Numerator == b.Numerator && a.Denominator == b.Denominator
+}
+
+func eqComp(a CompNum, b CompNum) bool {
+	ra := real(complex128(a))
+	rb := real(complex128(b))
+	ia := imag(complex128(a))
+	ib := imag(complex128(b))
+
+	if RealNum(ra-rb) < EPSILON && RealNum(rb-ra) < EPSILON &&
+		RealNum(ia-ib) < EPSILON && RealNum(ib-ia) < EPSILON {
+		return true
+	}
+	return false
+}
+
+func EqNum(a Number, b Number) bool {
+	switch a.(type) {
+	case IntNum:
+		if bi, ok := b.(IntNum); ok {
+			return eqInt(a.(IntNum), bi)
+		} else if br, ok := b.(RealNum); ok {
+			return eqReal(RealNum(a.(IntNum)), br)
+		} else if br, ok := b.(RatNum); ok {
+			return eqReal(RealNum(a.(IntNum)), br.ToReal())
+		} else {
+			return eqComp(intToComplex(a.(IntNum)), b.(CompNum))
+		}
+	case RealNum:
+		ar := a.(RealNum)
+		if bi, ok := b.(IntNum); ok {
+			return eqReal(ar, RealNum(bi))
+		} else if br, ok := b.(RealNum); ok {
+			return eqReal(ar, br)
+		} else if br, ok := b.(RatNum); ok {
+			return eqReal(ar, br.ToReal())
+		} else {
+			return eqComp(realToComplex(ar), b.(CompNum))
+		}
+	case RatNum:
+		ar := a.(RatNum)
+		if bi, ok := b.(IntNum); ok {
+			return eqRatnum(ar, MakeRatnum(bi, IntNum(1)))
+		} else if br, ok := b.(RealNum); ok {
+			return eqReal(ar.ToReal(), br)
+		} else if br, ok := b.(RatNum); ok {
+			return eqRatnum(ar, br)
+		} else {
+			return eqComp(realToComplex(ar.ToReal()), b.(CompNum))
+		}
+	case CompNum:
+		ac := a.(CompNum)
+		if bi, ok := b.(IntNum); ok {
+			return eqComp(ac, intToComplex(bi))
+		} else if br, ok := b.(RealNum); ok {
+			return eqComp(ac, realToComplex(br))
+		} else if br, ok := b.(RatNum); ok {
+			return eqComp(ac, realToComplex(br.ToReal()))
+		} else {
+			return eqComp(ac, b.(CompNum))
+		}
+	}
+	return false
+}
+
+func GTNum(a Number, b Number) bool {
+	switch a.(type) {
+	case IntNum:
+		ai := a.(IntNum)
+		if bi, ok := b.(IntNum); ok {
+			return ai > bi
+		} else if br, ok := b.(RealNum); ok {
+			return RealNum(ai) > br
+		} else if br, ok := b.(RatNum); ok {
+			return RealNum(ai) > br.ToReal()
+		}
+	case RealNum:
+		ar := a.(RealNum)
+		if bi, ok := b.(IntNum); ok {
+			return ar > RealNum(bi)
+		} else if br, ok := b.(RealNum); ok {
+			return ar > br
+		} else if br, ok := b.(RatNum); ok {
+			return ar > br.ToReal()
+		}
+	case RatNum:
+		ar := a.(RatNum)
+		if bi, ok := b.(IntNum); ok {
+			return ar.ToReal() > RealNum(bi)
+		} else if br, ok := b.(RealNum); ok {
+			return ar.ToReal() > br
+		} else if br, ok := b.(RatNum); ok {
+			return ar.ToReal() > br.ToReal()
+		}
+		return a.(RatNum).ToReal() > b.(RatNum).ToReal()
+	}
+	return false
+}
+
+func GTENum(a Number, b Number) bool {
+	return GTNum(a, b) || EqNum(a, b)
+}
+
+func LTNum(a Number, b Number) bool {
+	switch a.(type) {
+	case IntNum:
+		ai := a.(IntNum)
+		if bi, ok := b.(IntNum); ok {
+			return ai < bi
+		} else if br, ok := b.(RealNum); ok {
+			return RealNum(ai) < br
+		} else if br, ok := b.(RatNum); ok {
+			return RealNum(ai) < br.ToReal()
+		}
+	case RealNum:
+		ar := a.(RealNum)
+		if bi, ok := b.(IntNum); ok {
+			return ar < RealNum(bi)
+		} else if br, ok := b.(RealNum); ok {
+			return ar < br
+		} else if br, ok := b.(RatNum); ok {
+			return ar < br.ToReal()
+		}
+	case RatNum:
+		ar := a.(RatNum)
+		if bi, ok := b.(IntNum); ok {
+			return ar.ToReal() < RealNum(bi)
+		} else if br, ok := b.(RealNum); ok {
+			return ar.ToReal() < br
+		} else if br, ok := b.(RatNum); ok {
+			return ar.ToReal() < br.ToReal()
+		}
+		return a.(RatNum).ToReal() < b.(RatNum).ToReal()
+	}
+	return false
+}
+
+func LTENum(a Number, b Number) bool {
+	return LTNum(a, b) || EqNum(a, b)
 }

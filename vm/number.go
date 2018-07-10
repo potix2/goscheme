@@ -67,33 +67,61 @@ func arithDiv(args []ast.Expr) (ast.Expr, error) {
 }
 
 func arithEqual(args []ast.Expr) (ast.Expr, error) {
-	l := args[0].(ast.IntNum)
-	r := args[1].(ast.IntNum)
-	return ast.BooleanExpr{l == r}, nil
+	l := args[0].(ast.Number)
+	r := args[1].(ast.Number)
+	return ast.BooleanExpr{ast.EqNum(l, r)}, nil
 }
 
 func arithGreaterThan(args []ast.Expr) (ast.Expr, error) {
-	l := args[0].(ast.IntNum)
-	r := args[1].(ast.IntNum)
-	return ast.BooleanExpr{l > r}, nil
+	l := args[0].(ast.Number)
+	r := args[1].(ast.Number)
+	if _, ok := l.(ast.CompNum); ok {
+		return nil, &Error{Message: "real number is required"}
+	}
+	if _, ok := r.(ast.CompNum); ok {
+		return nil, &Error{Message: "real number is required"}
+	}
+
+	return ast.BooleanExpr{ast.GTNum(l, r)}, nil
 }
 
 func arithLessThan(args []ast.Expr) (ast.Expr, error) {
-	l := args[0].(ast.IntNum)
-	r := args[1].(ast.IntNum)
-	return ast.BooleanExpr{l < r}, nil
+	l := args[0].(ast.Number)
+	r := args[1].(ast.Number)
+	if _, ok := l.(ast.CompNum); ok {
+		return nil, &Error{Message: "real number is required"}
+	}
+	if _, ok := r.(ast.CompNum); ok {
+		return nil, &Error{Message: "real number is required"}
+	}
+
+	return ast.BooleanExpr{ast.LTNum(l, r)}, nil
 }
 
 func arithGreaterThanEuqal(args []ast.Expr) (ast.Expr, error) {
-	l := args[0].(ast.IntNum)
-	r := args[1].(ast.IntNum)
-	return ast.BooleanExpr{l >= r}, nil
+	l := args[0].(ast.Number)
+	r := args[1].(ast.Number)
+	if _, ok := l.(ast.CompNum); ok {
+		return nil, &Error{Message: "real number is required"}
+	}
+	if _, ok := r.(ast.CompNum); ok {
+		return nil, &Error{Message: "real number is required"}
+	}
+
+	return ast.BooleanExpr{ast.GTENum(l, r)}, nil
 }
 
 func arithLessThanEqual(args []ast.Expr) (ast.Expr, error) {
-	l := args[0].(ast.IntNum)
-	r := args[1].(ast.IntNum)
-	return ast.BooleanExpr{l <= r}, nil
+	l := args[0].(ast.Number)
+	r := args[1].(ast.Number)
+	if _, ok := l.(ast.CompNum); ok {
+		return nil, &Error{Message: "real number is required"}
+	}
+	if _, ok := r.(ast.CompNum); ok {
+		return nil, &Error{Message: "real number is required"}
+	}
+
+	return ast.BooleanExpr{ast.LTENum(l, r)}, nil
 }
 
 func arithIsNumber(args []ast.Expr) (ast.Expr, error) {

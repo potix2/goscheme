@@ -4,56 +4,10 @@ import (
 	"testing"
 )
 
-const (
-	EPSILON RealNum = 0.00000001
-)
-
 type NumberTestCase struct {
 	a        Number
 	b        Number
 	expected Number
-}
-
-func eqInt(a IntNum, b IntNum) bool {
-	return a == b
-}
-
-func eqReal(a RealNum, b RealNum) bool {
-	if (a-b) < EPSILON && (b-a) < EPSILON {
-		return true
-	}
-	return false
-}
-
-func eqRatnum(a RatNum, b RatNum) bool {
-	return a.Numerator == b.Numerator && a.Denominator == b.Denominator
-}
-
-func eqComp(a CompNum, b CompNum) bool {
-	ra := real(complex128(a))
-	rb := real(complex128(b))
-	ia := imag(complex128(a))
-	ib := imag(complex128(b))
-
-	if RealNum(ra-rb) < EPSILON && RealNum(rb-ra) < EPSILON &&
-		RealNum(ia-ib) < EPSILON && RealNum(ib-ia) < EPSILON {
-		return true
-	}
-	return false
-}
-
-func eq(a Number, b Number) bool {
-	switch a.(type) {
-	case IntNum:
-		return eqInt(a.(IntNum), b.(IntNum))
-	case RealNum:
-		return eqReal(a.(RealNum), b.(RealNum))
-	case RatNum:
-		return eqRatnum(a.(RatNum), b.(RatNum))
-	case CompNum:
-		return eqComp(a.(CompNum), b.(CompNum))
-	}
-	return false
 }
 
 func TestAdd(t *testing.T) {
@@ -78,7 +32,7 @@ func TestAdd(t *testing.T) {
 
 	for _, tt := range tests {
 		actual := tt.a.Add(tt.b)
-		if !eq(actual, tt.expected) {
+		if !EqNum(actual, tt.expected) {
 			t.Errorf("%v + %v => actual %v, expected %v", tt.a, tt.b, actual, tt.expected)
 		}
 	}
