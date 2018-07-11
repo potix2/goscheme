@@ -15,6 +15,7 @@ type Expr interface {
 
 type PrimitiveProc func([]Expr) (Expr, error)
 
+type StringExpr string
 type (
 	IdentExpr struct {
 		Lit string
@@ -145,6 +146,10 @@ func (x InputPort) Print(output io.Writer) {
 
 func (x OutputPort) Print(output io.Writer) {
 	output.Write([]byte("#<oport>"))
+}
+
+func (x StringExpr) Print(output io.Writer) {
+	output.Write([]byte(x))
 }
 
 func (e *Env) Bind(name string, value Expr) {

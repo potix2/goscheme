@@ -2,6 +2,7 @@ package parser
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/potix2/goscheme/ast"
 )
@@ -99,6 +100,12 @@ func (s *Scanner) Scan() (tok int, lit string, pos Position, err error) {
 			}
 			tok = NUMBER
 		}
+	case ch1 == '"':
+		lit, err = s.scanString()
+		if err != nil {
+			return
+		}
+		tok = STRING
 	case isSign(ch1):
 		if isPeculiarIdent(ch1, ch2) {
 			lit, err = s.scanIdent()
@@ -319,6 +326,51 @@ func (s *Scanner) scanNumber() (lit string, err error) {
 		ret = append(ret, s.peek())
 		s.next()
 	}
+
+	return string(ret), nil
+}
+
+var escapedChars = map[rune]rune{
+	'"':  '"',
+	'\\': '\\',
+	'|':  '|',
+	'a':  '\a',
+	'b':  '\t',
+	't':  '\t',
+	'n':  '\n',
+	'r':  '\r',
+}
+
+func (s *Scanner) scanString() (lit string, err error) {
+	//assert(s.peek() == '"')
+	s.next()
+
+	var ret []rune
+	for !s.reachEOF() && s.peek() != '"' {
+		if s.peek() == '\\' {
+			s.next()
+			switch s.peek() {
+			case '"', '\\', '|', 'a', 'b', 't', 'n', 'r':
+				ret = append(ret, escapedChars[s.peek()])
+			case 'x':
+				s.next()
+				var hexDigital []rune
+				for s.peek() != ';' {
+					hexDigital = append(hexDigital, s.peek())
+					s.next()
+				}
+				ui, err := strconv.ParseUint(string(hexDigital), 16, 64)
+				if err != nil {
+					return "", err
+				}
+				ret = append(ret, rune(ui))
+			}
+		} else {
+			ret = append(ret, s.peek())
+		}
+		s.next()
+	}
+	s.next()
 
 	return string(ret), nil
 }

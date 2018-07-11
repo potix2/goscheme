@@ -76,6 +76,21 @@ func TestSingleLineScan(t *testing.T) {
 			Token{-1, "", Position{1, 4}},
 		},
 		},
+		{input: "\"abc\"", expected: []Token{
+			Token{STRING, "abc", Position{1, 1}},
+			Token{-1, "", Position{1, 6}},
+		},
+		},
+		{input: "\"ab\\\"c\"", expected: []Token{
+			Token{STRING, "ab\"c", Position{1, 1}},
+			Token{-1, "", Position{1, 8}},
+		},
+		},
+		{input: "\"\\x60;\"", expected: []Token{
+			Token{STRING, "`", Position{1, 1}},
+			Token{-1, "", Position{1, 8}},
+		},
+		},
 	}
 
 	for _, tt := range tests {
