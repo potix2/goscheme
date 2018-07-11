@@ -154,7 +154,7 @@ func evalValues(args []ast.Expr, env *ast.Env) ([]ast.Expr, error) {
 
 func isVariable(e ast.Expr) bool {
 	switch e.(type) {
-	case ast.IntNum, ast.RealNum, ast.RatNum, ast.CompNum, ast.BooleanExpr, ast.PrimitiveProcExpr, ast.InputPort, ast.OutputPort:
+	case ast.IntNum, ast.RealNum, ast.RatNum, ast.CompNum, ast.BooleanExpr, ast.PrimitiveProcExpr, ast.InputPort, ast.OutputPort, ast.StringExpr:
 		return true
 	default:
 		return false

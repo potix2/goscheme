@@ -42,4 +42,15 @@ func SetupPrimitives(e *ast.Env) {
 	e.Bind("current-input-port", makePrimitive("current-input-port", portCurrentInputPort))
 	e.Bind("current-output-port", makePrimitive("current-output-port", portCurrentOutputPort))
 	e.Bind("current-error-port", makePrimitive("current-error-port", portCurrentErrorPort))
+
+	//string
+	e.Bind("string?", makePrimitive("string?", strIsString))
+	e.Bind("string-length", makePrimitive("string-length", strStringLength))
+	e.Bind("string=?", makePrimitive("string=?", strStringEqual))
+	e.Bind("string<?", makePrimitive("string<?", strStringLT))
+	e.Bind("string<=?", makePrimitive("string<=?", strStringLTE))
+	e.Bind("string>?", makePrimitive("string>?", strStringGT))
+	e.Bind("string>=?", makePrimitive("string>=?", strStringGTE))
+	e.Bind("substring", makePrimitive("substring", strSubstring))
+	e.Bind("string-append", makePrimitive("string-append", strStringAppend))
 }

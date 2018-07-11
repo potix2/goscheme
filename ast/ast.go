@@ -155,3 +155,34 @@ func (x StringExpr) Print(output io.Writer) {
 func (e *Env) Bind(name string, value Expr) {
 	e.Values[name] = value
 }
+
+func TypeString(expr Expr) string {
+	switch expr.(type) {
+	case BooleanExpr:
+		return "boolean"
+	case IntNum:
+		return "number"
+	case RatNum:
+		return "number"
+	case RealNum:
+		return "number"
+	case IdentExpr:
+		return "symbol"
+	case StringExpr:
+		return "string"
+	case InputPort:
+		return "port"
+	case OutputPort:
+		return "port"
+	case PairExpr:
+		return "pair"
+	case LambdaExpr:
+		return "procedure"
+	case PrimitiveProcExpr:
+		return "procedure"
+	case QuoteExpr:
+		return "quote"
+	default:
+		return "unknown"
+	}
+}
