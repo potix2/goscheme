@@ -137,7 +137,7 @@ func (x PrimitiveProcExpr) Print(output io.Writer) {
 }
 
 func (x Undefined) Print(output io.Writer) {
-	output.Write([]byte("#undef"))
+	output.Write([]byte("#<undef>"))
 }
 
 func (x InputPort) Print(output io.Writer) {

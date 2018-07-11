@@ -8,49 +8,60 @@ func makePrimitive(op string, proc ast.PrimitiveProc) ast.PrimitiveProcExpr {
 	return ast.PrimitiveProcExpr{Operator: op, Proc: proc}
 }
 
+func bindPrimitive(e *ast.Env, op string, proc ast.PrimitiveProc) {
+	e.Bind(op, makePrimitive(op, proc))
+}
+
 func SetupPrimitives(e *ast.Env) {
 
 	//arithmetic operators
-	e.Bind("+", makePrimitive("+", arithAdd))
-	e.Bind("*", makePrimitive("*", arithMul))
-	e.Bind("-", makePrimitive("-", arithSub))
-	e.Bind("/", makePrimitive("/", arithDiv))
-	e.Bind("=", makePrimitive("=", arithEqual))
-	e.Bind("<", makePrimitive("<", arithLessThan))
-	e.Bind(">", makePrimitive(">", arithGreaterThan))
-	e.Bind("<=", makePrimitive("<=", arithLessThanEqual))
-	e.Bind(">=", makePrimitive(">=", arithGreaterThanEuqal))
-	e.Bind("number?", makePrimitive("number?", arithIsNumber))
+	bindPrimitive(e, "+", arithAdd)
+	bindPrimitive(e, "*", arithMul)
+	bindPrimitive(e, "-", arithSub)
+	bindPrimitive(e, "/", arithDiv)
+	bindPrimitive(e, "=", arithEqual)
+	bindPrimitive(e, "<", arithLessThan)
+	bindPrimitive(e, ">", arithGreaterThan)
+	bindPrimitive(e, "<=", arithLessThanEqual)
+	bindPrimitive(e, ">=", arithGreaterThanEuqal)
+	bindPrimitive(e, "number?", arithIsNumber)
 
 	//boolean operators
-	e.Bind("not", makePrimitive("not", boolNot))
-	e.Bind("boolean?", makePrimitive("boolean?", boolIsBoolean))
-	e.Bind("procedure?", makePrimitive("procedure?", boolIsProcedure))
-	//e.Bind("char?", makePrimitive("char?", boolIsChar))
-	//e.Bind("string?", makePrimitive("string?", boolIsString))
-	//e.Bind("vector?", makePrimitive("vector?", boolIsVector))
+	bindPrimitive(e, "not", boolNot)
+	bindPrimitive(e, "boolean?", boolIsBoolean)
+	bindPrimitive(e, "procedure?", boolIsProcedure)
+	//bindPrimitive(e, "char?", boolIsChar))
+	//bindPrimitive(e, "vector?", "vector?", boolIsVector))
 
 	//list operatators
-	e.Bind("cons", makePrimitive("cons", listCons))
-	e.Bind("car", makePrimitive("car", listCar))
-	e.Bind("cdr", makePrimitive("cdr", listCdr))
-	e.Bind("pair?", makePrimitive("pair?", listIsPair))
-	e.Bind("list?", makePrimitive("list?", listIsList))
-	e.Bind("null?", makePrimitive("null?", listIsNull))
+	bindPrimitive(e, "cons", listCons)
+	bindPrimitive(e, "car", listCar)
+	bindPrimitive(e, "cdr", listCdr)
+	bindPrimitive(e, "pair?", listIsPair)
+	bindPrimitive(e, "list?", listIsList)
+	bindPrimitive(e, "null?", listIsNull)
 
 	//port
-	e.Bind("current-input-port", makePrimitive("current-input-port", portCurrentInputPort))
-	e.Bind("current-output-port", makePrimitive("current-output-port", portCurrentOutputPort))
-	e.Bind("current-error-port", makePrimitive("current-error-port", portCurrentErrorPort))
+	bindPrimitive(e, "current-input-port", portCurrentInputPort)
+	bindPrimitive(e, "current-output-port", portCurrentOutputPort)
+	bindPrimitive(e, "current-error-port", portCurrentErrorPort)
+	bindPrimitive(e, "write-string", portWriteString)
+	bindPrimitive(e, "display", portDisplay)
+	bindPrimitive(e, "newline", portNewline)
+	bindPrimitive(e, "input-port?", portIsInputPort)
+	bindPrimitive(e, "output-port?", portIsOutputPort)
+	bindPrimitive(e, "textual-port?", portIsTextualPort)
+	bindPrimitive(e, "binary-port?", portIsBinaryPort)
+	bindPrimitive(e, "port?", portIsPort)
 
 	//string
-	e.Bind("string?", makePrimitive("string?", strIsString))
-	e.Bind("string-length", makePrimitive("string-length", strStringLength))
-	e.Bind("string=?", makePrimitive("string=?", strStringEqual))
-	e.Bind("string<?", makePrimitive("string<?", strStringLT))
-	e.Bind("string<=?", makePrimitive("string<=?", strStringLTE))
-	e.Bind("string>?", makePrimitive("string>?", strStringGT))
-	e.Bind("string>=?", makePrimitive("string>=?", strStringGTE))
-	e.Bind("substring", makePrimitive("substring", strSubstring))
-	e.Bind("string-append", makePrimitive("string-append", strStringAppend))
+	bindPrimitive(e, "string?", strIsString)
+	bindPrimitive(e, "string-length", strStringLength)
+	bindPrimitive(e, "string=?", strStringEqual)
+	bindPrimitive(e, "string<?", strStringLT)
+	bindPrimitive(e, "string<=?", strStringLTE)
+	bindPrimitive(e, "string>?", strStringGT)
+	bindPrimitive(e, "string>=?", strStringGTE)
+	bindPrimitive(e, "substring", strSubstring)
+	bindPrimitive(e, "string-append", strStringAppend)
 }

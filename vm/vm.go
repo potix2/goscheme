@@ -1,7 +1,6 @@
 package vm
 
 import (
-	"bufio"
 	"os"
 
 	"github.com/potix2/goscheme/ast"
@@ -17,9 +16,9 @@ type VM struct {
 }
 
 func InitVM(env *ast.Env) {
-	input := ast.InputPort{bufio.NewReader(os.Stdin), false}
-	output := ast.OutputPort{bufio.NewWriter(os.Stdout), false}
-	err := ast.OutputPort{bufio.NewWriter(os.Stderr), false}
+	input := ast.InputPort{os.Stdin, false}
+	output := ast.OutputPort{os.Stdout, false}
+	err := ast.OutputPort{os.Stderr, false}
 
 	CurrentVM = VM{input, output, err, env}
 }
