@@ -75,11 +75,18 @@ func portDisplay(args []ast.Expr) (ast.Expr, error) {
 	if len(args) == 0 {
 		return nil, &Error{Message: fmt.Sprintf("required at least 1, but got %d", len(args))}
 	}
-	s, ok := args[0].(ast.StringExpr)
-	if !ok {
+
+	var s ast.StringExpr
+	e := args[0]
+	if implIsString(e) {
+		s = e.(ast.StringExpr)
+	} else if implIsNumber(e) {
+		s = ast.NumberToString(e)
+	} else {
 		return nil, &Error{Message: fmt.Sprintf("expected string, but got %s", ast.TypeString(args[0]))}
 	}
 
+	var ok bool
 	port := CurrentVM.Output
 	if len(args) > 1 {
 		port, ok = args[1].(ast.OutputPort)

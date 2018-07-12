@@ -7,12 +7,16 @@ import (
 	"github.com/potix2/goscheme/ast"
 )
 
+func implIsString(expr ast.Expr) bool {
+	_, ok := expr.(ast.StringExpr)
+	return ok
+}
+
 func strIsString(args []ast.Expr) (ast.Expr, error) {
 	if len(args) != 1 {
 		return nil, &Error{Message: fmt.Sprintf("requires 1, but got %d", len(args))}
 	}
-	_, ok := args[0].(ast.StringExpr)
-	return ast.BooleanExpr{ok}, nil
+	return ast.BooleanExpr{implIsString(args[0])}, nil
 }
 
 func strStringLength(args []ast.Expr) (ast.Expr, error) {

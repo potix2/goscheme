@@ -25,6 +25,8 @@ func SetupPrimitives(e *ast.Env) {
 	bindPrimitive(e, "<=", arithLessThanEqual)
 	bindPrimitive(e, ">=", arithGreaterThanEuqal)
 	bindPrimitive(e, "number?", arithIsNumber)
+	bindPrimitive(e, "number->string", arithNumberToString)
+	bindPrimitive(e, "string->number", arithStringToNumber)
 
 	//boolean operators
 	bindPrimitive(e, "not", boolNot)

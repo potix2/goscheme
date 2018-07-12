@@ -1,6 +1,7 @@
 package ast
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"strconv"
@@ -355,6 +356,12 @@ func StringToNumber(s string) Number {
 	//TODO: check exact
 	exact := true
 	return stringToNumberImpl(s, radix, exact)
+}
+
+func NumberToString(e Expr) StringExpr {
+	var buf bytes.Buffer
+	e.Print(&buf)
+	return StringExpr(buf.String())
 }
 
 func stringToNumberImpl(s string, radix int, exact bool) Number {

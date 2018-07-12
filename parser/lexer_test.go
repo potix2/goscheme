@@ -91,6 +91,12 @@ func TestSingleLineScan(t *testing.T) {
 			Token{-1, "", Position{1, 8}},
 		},
 		},
+		{input: "1\n2", expected: []Token{
+			Token{NUMBER, "1", Position{1, 1}},
+			Token{NUMBER, "2", Position{2, 1}},
+			Token{-1, "", Position{2, 2}},
+		},
+		},
 	}
 
 	for _, tt := range tests {

@@ -124,14 +124,40 @@ func arithLessThanEqual(args []ast.Expr) (ast.Expr, error) {
 	return ast.BooleanExpr{ast.LTENum(l, r)}, nil
 }
 
+func implIsNumber(expr ast.Expr) bool {
+	switch expr.(type) {
+	case ast.IntNum, ast.RealNum, ast.RatNum, ast.CompNum:
+		return true
+	default:
+		return false
+	}
+}
+
 func arithIsNumber(args []ast.Expr) (ast.Expr, error) {
 	if len(args) != 1 {
-		return nil, &Error{Message: fmt.Sprintf("not requires 1, but got %d", len(args))}
+		return nil, &Error{Message: fmt.Sprintf("requires 1, but got %d", len(args))}
 	}
-	switch args[0].(type) {
-	case ast.IntNum:
-		return ast.BooleanExpr{true}, nil
-	default:
-		return ast.BooleanExpr{false}, nil
+	return ast.BooleanExpr{implIsNumber(args[0])}, nil
+}
+
+func arithNumberToString(args []ast.Expr) (ast.Expr, error) {
+	if len(args) != 1 {
+		return nil, &Error{Message: fmt.Sprintf("requires 1, but got %d", len(args))}
+	}
+	if implIsNumber(args[0]) {
+		return ast.NumberToString(args[0]), nil
+	} else {
+		return nil, &Error{Message: fmt.Sprintf("expected number, but got %s", ast.TypeString(args[0]))}
+	}
+}
+
+func arithStringToNumber(args []ast.Expr) (ast.Expr, error) {
+	if len(args) != 1 {
+		return nil, &Error{Message: fmt.Sprintf("requires 1, but got %d", len(args))}
+	}
+	if s, ok := args[0].(ast.StringExpr); ok {
+		return ast.StringToNumber(string(s)), nil
+	} else {
+		return nil, &Error{Message: fmt.Sprintf("expected string, but got %s", ast.TypeString(args[0]))}
 	}
 }
