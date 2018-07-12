@@ -51,6 +51,7 @@ func runInteractive() {
 			es := e.Error()
 			if strings.HasSuffix(es, "unexpected $end") {
 				following = true
+				source += "\n"
 				continue
 			} else {
 				following = true
