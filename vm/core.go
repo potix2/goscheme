@@ -86,6 +86,20 @@ func Eval(e ast.Expr, env *ast.Env) (ast.Expr, error) {
 					}
 					return result, nil
 				}
+			case "begin":
+				if len(a.Exprs) <= 1 {
+					return nil, &Error{Message: fmt.Sprintf("required at least 1, but got %d", len(a.Exprs)-1)}
+				}
+
+				var ret ast.Expr
+				var err error
+				for _, e := range a.Exprs[1:] {
+					ret, err = Eval(e, env)
+					if err != nil {
+						return nil, err
+					}
+				}
+				return ret, nil
 			}
 		}
 
