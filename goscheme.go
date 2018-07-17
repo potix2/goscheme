@@ -27,6 +27,7 @@ func runInteractive() {
 	scanner := bufio.NewScanner(os.Stdin)
 
 	env := vm.NewEnv()
+	vm.SetInteractionEnvironment(env)
 	vm.InitVM(env)
 	vm.SetupPrimitives(env)
 	for {

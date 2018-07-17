@@ -24,6 +24,18 @@ func listCdr(args []ast.Expr) (ast.Expr, error) {
 	return nil, &Error{Message: fmt.Sprintf("pair required, but got %#v", args[0])}
 }
 
+func recMakeListFromSlice(elems []ast.Expr) ast.Expr {
+	if len(elems) == 0 {
+		return ast.PairExpr{}
+	} else {
+		return ast.PairExpr{elems[0], recMakeListFromSlice(elems[1:])}
+	}
+}
+
+func listList(args []ast.Expr) (ast.Expr, error) {
+	return recMakeListFromSlice(args), nil
+}
+
 func listIsPair(args []ast.Expr) (ast.Expr, error) {
 	if len(args) != 1 {
 		return nil, &Error{Message: fmt.Sprintf("not requires 1, but got %d", len(args))}
@@ -54,4 +66,17 @@ func listIsList(args []ast.Expr) (ast.Expr, error) {
 		return ast.BooleanExpr{p.IsList()}, nil
 	}
 	return ast.BooleanExpr{false}, nil
+}
+
+func recListToSlice(p ast.PairExpr, ret []ast.Expr) []ast.Expr {
+	if p.IsEmptyList() {
+		return ret
+	} else {
+		return recListToSlice(p.Cdr.(ast.PairExpr), append(ret, p.Car))
+	}
+}
+
+func listToSlice(head ast.Expr) []ast.Expr {
+	var ret []ast.Expr
+	return recListToSlice(head.(ast.PairExpr), ret)
 }

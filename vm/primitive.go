@@ -39,6 +39,7 @@ func SetupPrimitives(e *ast.Env) {
 	bindPrimitive(e, "cons", listCons)
 	bindPrimitive(e, "car", listCar)
 	bindPrimitive(e, "cdr", listCdr)
+	bindPrimitive(e, "list", listList)
 	bindPrimitive(e, "pair?", listIsPair)
 	bindPrimitive(e, "list?", listIsList)
 	bindPrimitive(e, "null?", listIsNull)
@@ -66,4 +67,12 @@ func SetupPrimitives(e *ast.Env) {
 	bindPrimitive(e, "string>=?", strStringGTE)
 	bindPrimitive(e, "substring", strSubstring)
 	bindPrimitive(e, "string-append", strStringAppend)
+
+	//system
+	bindPrimitive(e, "load", sysLoad)
+
+	//env
+	bindPrimitive(e, "eval", envEval)
+	bindPrimitive(e, "apply", envApply)
+	bindPrimitive(e, "interaction-environment", envInteractionEnvironment)
 }

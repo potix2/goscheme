@@ -152,6 +152,10 @@ func (x StringExpr) Print(output io.Writer) {
 	output.Write([]byte(x))
 }
 
+func (e Env) Print(output io.Writer) {
+	output.Write([]byte("#<env>"))
+}
+
 func (e *Env) Bind(name string, value Expr) {
 	e.Values[name] = value
 }
@@ -182,6 +186,8 @@ func TypeString(expr Expr) string {
 		return "procedure"
 	case QuoteExpr:
 		return "quote"
+	case Env:
+		return "env"
 	default:
 		return "unknown"
 	}
