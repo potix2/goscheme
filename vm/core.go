@@ -133,7 +133,7 @@ func apply(op ast.Expr, vals []ast.Expr) (ast.Expr, error) {
 
 		if argList, ok := l.Args.(ast.IdentExpr); ok {
 			newEnv := Extend(l.Closure, map[string]ast.Expr{})
-			newEnv.Bind(argList.Lit, ast.QuoteExpr{recMakeListFromSlice(vals)})
+			newEnv.Bind(argList.Lit, recMakeListFromSlice(vals))
 			return Eval(l.Body, newEnv)
 		}
 	}
@@ -149,10 +149,6 @@ func Eval(e ast.Expr, env *ast.Env) (ast.Expr, error) {
 
 	if isVariable(e) {
 		return e, nil
-	}
-
-	if isList(e) {
-		return evalProgram(listToSlice(e), env)
 	}
 
 	//eval(op operands) => (apply eval(op) operands)
@@ -188,7 +184,7 @@ func evalValues(args []ast.Expr, env *ast.Env) ([]ast.Expr, error) {
 
 func isVariable(e ast.Expr) bool {
 	switch e.(type) {
-	case ast.IntNum, ast.RealNum, ast.RatNum, ast.CompNum, ast.BooleanExpr, ast.PrimitiveProcExpr, ast.InputPort, ast.OutputPort, ast.StringExpr:
+	case ast.IntNum, ast.RealNum, ast.RatNum, ast.CompNum, ast.BooleanExpr, ast.PrimitiveProcExpr, ast.InputPort, ast.OutputPort, ast.StringExpr, ast.PairExpr:
 		return true
 	default:
 		return false
