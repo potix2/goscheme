@@ -1,16 +1,25 @@
 package vm
 
 import (
+	"bytes"
 	"fmt"
+	"io"
 
 	"github.com/potix2/goscheme/ast"
 
 	"github.com/sirupsen/logrus"
 )
 
+//((lambda (x)
+//  (lambda (y) (+ x y))) 2)
+// =>
+//(lambda (y) (+ x y)) {env: x = 2}
 func evalProgram(exprs []ast.Expr, env *ast.Env) (ast.Expr, error) {
-	//TODO: envが必要なもの(program)とそれ以外を分けてapplyの引数からenvを削除する
-	//logrus.Debugf("eval: %#v (env:%v)\n", e, env)
+	logrus.WithFields(logrus.Fields{
+		"expr": dumpExpr(ast.AppExpr{exprs}),
+		"env":  dumpEnv(env),
+	}).Debug("evalProgram")
+
 	if op, ok := exprs[0].(ast.IdentExpr); ok {
 		switch op.Lit {
 		case "lambda":
@@ -44,14 +53,6 @@ func evalProgram(exprs []ast.Expr, env *ast.Env) (ast.Expr, error) {
 				return nil, &Error{Message: fmt.Sprintf("expected 1 args, but got %d\n", len(exprs)-1)}
 			}
 			return exprs[1], nil
-			/*
-				case "list":
-					vals, err := evalValues(exprs[1:], env)
-					if err != nil {
-						return nil, err
-					}
-					return ast.AppExpr{vals}, nil
-			*/
 		case "if":
 			if len(exprs) != 4 && len(exprs) != 3 {
 				return nil, &Error{Message: fmt.Sprintf("expected 2 or 3 args, but got %d\n", len(exprs)-1)}
@@ -141,7 +142,11 @@ func apply(op ast.Expr, vals []ast.Expr) (ast.Expr, error) {
 }
 
 func Eval(e ast.Expr, env *ast.Env) (ast.Expr, error) {
-	logrus.Debugf("eval: %#v (env:%v)\n", e, env)
+	logrus.WithFields(logrus.Fields{
+		"expr": dumpExpr(e),
+		"env":  dumpEnv(env),
+	}).Debug("eval")
+
 	if isVariable(e) {
 		return e, nil
 	}
@@ -196,4 +201,28 @@ func isList(e ast.Expr) bool {
 	} else {
 		return false
 	}
+}
+
+func dumpExpr(e ast.Expr) string {
+	var buf bytes.Buffer
+	e.Print(&buf)
+	return buf.String()
+}
+
+func dumpEnvImpl(w io.Writer, env *ast.Env) {
+	w.Write([]byte("{"))
+	for k, _ := range env.Values {
+		fmt.Fprintf(w, "%s, ", k)
+	}
+	if env.Parent != nil {
+		fmt.Fprintf(w, "parent(%p):", env.Parent)
+		dumpEnvImpl(w, env.Parent)
+	}
+	w.Write([]byte("}"))
+}
+
+func dumpEnv(env *ast.Env) string {
+	var buf bytes.Buffer
+	dumpEnvImpl(&buf, env)
+	return buf.String()
 }

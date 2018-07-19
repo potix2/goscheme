@@ -26,7 +26,7 @@ func Lookup(env *ast.Env, name string) (ast.Expr, error) {
 		if expr, ok := e.Values[name]; ok {
 			return expr, nil
 		}
-		e = env.Parent
+		e = e.Parent
 	}
 
 	return nil, &Error{Message: fmt.Sprintf("Unbound Variable: %s", name)}
