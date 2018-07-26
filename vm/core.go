@@ -23,7 +23,7 @@ func evalProgram(exprs []ast.Expr, env *ast.Env) (ast.Expr, error) {
 	if op, ok := exprs[0].(ast.IdentExpr); ok {
 		switch op.Lit {
 		case "lambda":
-			return ast.LambdaExpr{exprs[1], exprs[2], env}, nil
+			return ast.LambdaExpr{exprs[1], exprs[2:], env}, nil
 		case "define":
 			//(define <variable> <expression>)
 			if id, ok := exprs[1].(ast.IdentExpr); ok {
@@ -37,7 +37,7 @@ func evalProgram(exprs []ast.Expr, env *ast.Env) (ast.Expr, error) {
 			//    => (define <variable> (lambda <formal> <body>))
 			if formals, ok := exprs[1].(ast.AppExpr); ok {
 				if variable, ok := formals.Exprs[0].(ast.IdentExpr); ok {
-					env.Bind(variable.Lit, ast.LambdaExpr{ast.AppExpr{formals.Exprs[1:]}, exprs[2], env})
+					env.Bind(variable.Lit, ast.LambdaExpr{ast.AppExpr{formals.Exprs[1:]}, exprs[2:], env})
 					return variable, nil
 				}
 			}
@@ -128,13 +128,31 @@ func apply(op ast.Expr, vals []ast.Expr) (ast.Expr, error) {
 					newEnv.Bind(id.Lit, vals[i])
 				}
 			}
-			return Eval(l.Body, newEnv)
+
+			var ret ast.Expr
+			var err error
+			for _, e := range l.Body {
+				ret, err = Eval(e, newEnv)
+				if err != nil {
+					return nil, err
+				}
+			}
+			return ret, nil
 		}
 
 		if argList, ok := l.Args.(ast.IdentExpr); ok {
 			newEnv := Extend(l.Closure, map[string]ast.Expr{})
 			newEnv.Bind(argList.Lit, recMakeListFromSlice(vals))
-			return Eval(l.Body, newEnv)
+
+			var ret ast.Expr
+			var err error
+			for _, e := range l.Body {
+				ret, err = Eval(e, newEnv)
+				if err != nil {
+					return nil, err
+				}
+			}
+			return ret, nil
 		}
 	}
 

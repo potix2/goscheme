@@ -36,7 +36,7 @@ type (
 	//(lambda (x) (+ 1 x))
 	LambdaExpr struct {
 		Args    Expr
-		Body    Expr
+		Body    []Expr
 		Closure *Env
 	}
 	//(let
@@ -125,11 +125,9 @@ func (x AppExpr) Print(output io.Writer) {
 }
 
 func (x LambdaExpr) Print(output io.Writer) {
-	output.Write([]byte("(lambda "))
+	output.Write([]byte("#<closure (#f"))
 	x.Args.Print(output)
-	output.Write([]byte(" "))
-	x.Body.Print(output)
-	output.Write([]byte(")"))
+	output.Write([]byte(")>"))
 }
 
 func (x PrimitiveProcExpr) Print(output io.Writer) {
