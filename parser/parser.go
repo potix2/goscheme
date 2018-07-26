@@ -5,14 +5,14 @@ package parser
 import __yyfmt__ "fmt"
 
 import (
-	"github.com/potix2/goscheme/ast"
+	"github.com/potix2/goscheme/scm"
 	"strconv"
 )
 
 type yySymType struct {
 	yys   int
-	exprs []ast.Expr
-	expr  ast.Expr
+	exprs []scm.Expr
+	expr  scm.Expr
 	tok   Token
 }
 
@@ -425,36 +425,36 @@ yynewstate:
 		}
 	case 2:
 		{
-			yyVAL.exprs = append([]ast.Expr{yyS[yypt-0].expr})
+			yyVAL.exprs = append([]scm.Expr{yyS[yypt-0].expr})
 		}
 	case 3:
 		{
-			yyVAL.exprs = append([]ast.Expr{yyS[yypt-1].expr}, yyS[yypt-0].exprs...)
+			yyVAL.exprs = append([]scm.Expr{yyS[yypt-1].expr}, yyS[yypt-0].exprs...)
 		}
 	case 12:
 		{
-			yyVAL.expr = ast.QuoteExpr{yyS[yypt-0].expr}
+			yyVAL.expr = scm.QuoteExpr{yyS[yypt-0].expr}
 			if l, ok := yylex.(*Lexer); ok {
 				l.expr = yyVAL.expr
 			}
 		}
 	case 18:
 		{
-			yyVAL.expr = ast.MakeListFromSlice([]ast.Expr{})
+			yyVAL.expr = scm.MakeListFromSlice([]scm.Expr{})
 			if l, ok := yylex.(*Lexer); ok {
 				l.expr = yyVAL.expr
 			}
 		}
 	case 19:
 		{
-			yyVAL.expr = ast.MakeListFromSlice(yyS[yypt-1].exprs)
+			yyVAL.expr = scm.MakeListFromSlice(yyS[yypt-1].exprs)
 			if l, ok := yylex.(*Lexer); ok {
 				l.expr = yyVAL.expr
 			}
 		}
 	case 20:
 		{
-			p := ast.MakeListFromSlice(yyS[yypt-3].exprs)
+			p := scm.MakeListFromSlice(yyS[yypt-3].exprs)
 			p.Cdr = yyS[yypt-1].expr
 			yyVAL.expr = p
 			if l, ok := yylex.(*Lexer); ok {
@@ -463,15 +463,15 @@ yynewstate:
 		}
 	case 21:
 		{
-			yyVAL.exprs = append([]ast.Expr{yyS[yypt-0].expr})
+			yyVAL.exprs = append([]scm.Expr{yyS[yypt-0].expr})
 		}
 	case 22:
 		{
-			yyVAL.exprs = append([]ast.Expr{yyS[yypt-1].expr}, yyS[yypt-0].exprs...)
+			yyVAL.exprs = append([]scm.Expr{yyS[yypt-1].expr}, yyS[yypt-0].exprs...)
 		}
 	case 24:
 		{
-			yyVAL.expr = ast.IdentExpr{Lit: yyS[yypt-0].tok.Lit}
+			yyVAL.expr = scm.IdentExpr{Lit: yyS[yypt-0].tok.Lit}
 			if l, ok := yylex.(*Lexer); ok {
 				l.expr = yyVAL.expr
 			}
@@ -479,46 +479,46 @@ yynewstate:
 	case 25:
 		{
 			lit, _ := strconv.ParseBool(yyS[yypt-0].tok.Lit)
-			yyVAL.expr = ast.BooleanExpr{Lit: lit}
+			yyVAL.expr = scm.BooleanExpr{Lit: lit}
 			if l, ok := yylex.(*Lexer); ok {
 				l.expr = yyVAL.expr
 			}
 		}
 	case 26:
 		{
-			yyVAL.expr = ast.StringToNumber(yyS[yypt-0].tok.Lit)
+			yyVAL.expr = scm.StringToNumber(yyS[yypt-0].tok.Lit)
 			if l, ok := yylex.(*Lexer); ok {
 				l.expr = yyVAL.expr
 			}
 		}
 	case 27:
 		{
-			yyVAL.expr = ast.StringExpr(yyS[yypt-0].tok.Lit)
+			yyVAL.expr = scm.StringExpr(yyS[yypt-0].tok.Lit)
 			if l, ok := yylex.(*Lexer); ok {
 				l.expr = yyVAL.expr
 			}
 		}
 	case 28:
 		{
-			yyVAL.expr = ast.AppExpr{Exprs: []ast.Expr{yyS[yypt-1].expr}}
+			yyVAL.expr = scm.AppExpr{Exprs: []scm.Expr{yyS[yypt-1].expr}}
 			if l, ok := yylex.(*Lexer); ok {
 				l.expr = yyVAL.expr
 			}
 		}
 	case 29:
 		{
-			yyVAL.expr = ast.AppExpr{Exprs: append([]ast.Expr{yyS[yypt-2].expr}, yyS[yypt-1].exprs...)}
+			yyVAL.expr = scm.AppExpr{Exprs: append([]scm.Expr{yyS[yypt-2].expr}, yyS[yypt-1].exprs...)}
 			if l, ok := yylex.(*Lexer); ok {
 				l.expr = yyVAL.expr
 			}
 		}
 	case 30:
 		{
-			yyVAL.exprs = append([]ast.Expr{yyS[yypt-0].expr})
+			yyVAL.exprs = append([]scm.Expr{yyS[yypt-0].expr})
 		}
 	case 31:
 		{
-			yyVAL.exprs = append([]ast.Expr{yyS[yypt-1].expr}, yyS[yypt-0].exprs...)
+			yyVAL.exprs = append([]scm.Expr{yyS[yypt-1].expr}, yyS[yypt-0].exprs...)
 		}
 
 	}

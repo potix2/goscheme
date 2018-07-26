@@ -7,14 +7,14 @@ import (
 	//"path"
 	//"strings"
 
-	"github.com/potix2/goscheme/ast"
+	"github.com/potix2/goscheme/scm"
 	//"github.com/potix2/goscheme/parser"
 )
 
 type Library struct {
 	Name     string
 	Symbols  []string
-	TopLevel *ast.Env
+	TopLevel *scm.Env
 }
 
 var libraries map[string]Library
@@ -58,9 +58,9 @@ func lookup(p string) (string, error) {
 */
 
 /*
-func libImport(args []ast.Expr) (ast.Expr, error) {
+func libImport(args []scm.Expr) (scm.Expr, error) {
 }
 
-func libExport(args []ast.Expr) (ast.Expr, error) {
+func libExport(args []scm.Expr) (scm.Expr, error) {
 }
 */

@@ -2,13 +2,13 @@
 package parser
 import (
     "strconv"
-    "github.com/potix2/goscheme/ast"
+    "github.com/potix2/goscheme/scm"
 )
 %}
 
 %union{
-    exprs []ast.Expr
-    expr  ast.Expr
+    exprs []scm.Expr
+    expr  scm.Expr
     tok   Token
 }
 
@@ -28,12 +28,12 @@ program:
 commands:
         command
         {
-            $$ = append([]ast.Expr{$1})
+            $$ = append([]scm.Expr{$1})
         }
         |
         command commands
         {
-            $$ = append([]ast.Expr{$1}, $2...)
+            $$ = append([]scm.Expr{$1}, $2...)
         }
 
 command: expr
@@ -45,7 +45,7 @@ self_evaluating : bool | number | string
 quotation :
         '\'' datum
         {
-            $$ = ast.QuoteExpr{$2}
+            $$ = scm.QuoteExpr{$2}
             if l, ok := yylex.(*Lexer); ok { l.expr = $$ }
         }
 
@@ -56,17 +56,17 @@ simple_datum : bool | number | symbol
 compound_datum :
                '(' ')'
                {
-                    $$ = ast.MakeListFromSlice([]ast.Expr{})
+                    $$ = scm.MakeListFromSlice([]scm.Expr{})
                     if l, ok := yylex.(*Lexer); ok { l.expr = $$ }
                }
                | '(' data ')'
                {
-                    $$ = ast.MakeListFromSlice($2)
+                    $$ = scm.MakeListFromSlice($2)
                     if l, ok := yylex.(*Lexer); ok { l.expr = $$ }
                }
                | '(' data '.' datum ')'
                {
-                    p := ast.MakeListFromSlice($2)
+                    p := scm.MakeListFromSlice($2)
                     p.Cdr = $4
                     $$ = p
                     if l, ok := yylex.(*Lexer); ok { l.expr = $$ }
@@ -75,11 +75,11 @@ compound_datum :
 data :
      datum
      {
-        $$ = append([]ast.Expr{$1})
+        $$ = append([]scm.Expr{$1})
      }
      | datum data
      {
-        $$ = append([]ast.Expr{$1}, $2...)
+        $$ = append([]scm.Expr{$1}, $2...)
      }
 
 symbol : identifier
@@ -87,7 +87,7 @@ symbol : identifier
 identifier :
         IDENT
         {
-            $$ = ast.IdentExpr{Lit: $1.Lit}
+            $$ = scm.IdentExpr{Lit: $1.Lit}
             if l, ok := yylex.(*Lexer); ok { l.expr = $$ }
         }
 
@@ -95,41 +95,41 @@ bool :
         BOOLEAN
         {
             lit, _ := strconv.ParseBool($1.Lit)
-            $$ = ast.BooleanExpr{Lit: lit}
+            $$ = scm.BooleanExpr{Lit: lit}
             if l, ok := yylex.(*Lexer); ok { l.expr = $$ }
         }
 
 number : NUMBER
        {
-            $$ = ast.StringToNumber($1.Lit)
+            $$ = scm.StringToNumber($1.Lit)
             if l, ok := yylex.(*Lexer); ok { l.expr = $$ }
        }
 
 string : STRING
        {
-            $$ = ast.StringExpr($1.Lit)
+            $$ = scm.StringExpr($1.Lit)
             if l, ok := yylex.(*Lexer); ok { l.expr = $$ }
        }
 
 proc_call :
         '(' expr ')'
         {
-            $$ = ast.AppExpr{Exprs: []ast.Expr{$2}}
+            $$ = scm.AppExpr{Exprs: []scm.Expr{$2}}
             if l, ok := yylex.(*Lexer); ok { l.expr = $$ }
         }
         | '(' expr operands ')'
         {
-            $$ = ast.AppExpr{Exprs: append([]ast.Expr{$2}, $3...)}
+            $$ = scm.AppExpr{Exprs: append([]scm.Expr{$2}, $3...)}
             if l, ok := yylex.(*Lexer); ok { l.expr = $$ }
         }
 operands :
          expr
          {
-            $$ = append([]ast.Expr{$1})
+            $$ = append([]scm.Expr{$1})
          }
          |
          expr operands
          {
-            $$ = append([]ast.Expr{$1}, $2...)
+            $$ = append([]scm.Expr{$1}, $2...)
          }
 %%

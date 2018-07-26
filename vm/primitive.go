@@ -1,18 +1,18 @@
 package vm
 
 import (
-	"github.com/potix2/goscheme/ast"
+	"github.com/potix2/goscheme/scm"
 )
 
-func makePrimitive(op string, proc ast.PrimitiveProc) ast.PrimitiveProcExpr {
-	return ast.PrimitiveProcExpr{Operator: op, Proc: proc}
+func makePrimitive(op string, proc scm.PrimitiveProc) scm.PrimitiveProcExpr {
+	return scm.PrimitiveProcExpr{Operator: op, Proc: proc}
 }
 
-func bindPrimitive(e *ast.Env, op string, proc ast.PrimitiveProc) {
+func bindPrimitive(e *scm.Env, op string, proc scm.PrimitiveProc) {
 	e.Bind(op, makePrimitive(op, proc))
 }
 
-func SetupPrimitives(e *ast.Env) {
+func SetupPrimitives(e *scm.Env) {
 
 	//arithmetic operators
 	bindPrimitive(e, "+", arithAdd)

@@ -3,43 +3,43 @@ package vm
 import (
 	"fmt"
 
-	"github.com/potix2/goscheme/ast"
+	"github.com/potix2/goscheme/scm"
 )
 
-func boolNot(args []ast.Expr) (ast.Expr, error) {
+func boolNot(args []scm.Expr) (scm.Expr, error) {
 	if len(args) != 1 {
 		return nil, &Error{Message: fmt.Sprintf("not requires 1, but got %d", len(args))}
 	}
 
-	if b, ok := args[0].(ast.BooleanExpr); ok {
+	if b, ok := args[0].(scm.BooleanExpr); ok {
 		if !b.Lit {
-			return ast.BooleanExpr{true}, nil
+			return scm.BooleanExpr{true}, nil
 		}
 	}
 
-	return ast.BooleanExpr{false}, nil
+	return scm.BooleanExpr{false}, nil
 }
 
-func boolIsBoolean(args []ast.Expr) (ast.Expr, error) {
+func boolIsBoolean(args []scm.Expr) (scm.Expr, error) {
 	if len(args) != 1 {
 		return nil, &Error{Message: fmt.Sprintf("not requires 1, but got %d", len(args))}
 	}
 
-	if _, ok := args[0].(ast.BooleanExpr); ok {
-		return ast.BooleanExpr{true}, nil
+	if _, ok := args[0].(scm.BooleanExpr); ok {
+		return scm.BooleanExpr{true}, nil
 	} else {
-		return ast.BooleanExpr{false}, nil
+		return scm.BooleanExpr{false}, nil
 	}
 }
 
-func boolIsProcedure(args []ast.Expr) (ast.Expr, error) {
+func boolIsProcedure(args []scm.Expr) (scm.Expr, error) {
 	if len(args) != 1 {
 		return nil, &Error{Message: fmt.Sprintf("not requires 1, but got %d", len(args))}
 	}
 	switch args[0].(type) {
-	case ast.LambdaExpr, ast.PrimitiveProcExpr:
-		return ast.BooleanExpr{true}, nil
+	case scm.LambdaExpr, scm.PrimitiveProcExpr:
+		return scm.BooleanExpr{true}, nil
 	default:
-		return ast.BooleanExpr{false}, nil
+		return scm.BooleanExpr{false}, nil
 	}
 }

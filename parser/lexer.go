@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/potix2/goscheme/ast"
+	"github.com/potix2/goscheme/scm"
 )
 
 const (
@@ -403,8 +403,8 @@ type Lexer struct {
 	lit   string
 	pos   Position
 	e     error
-	expr  ast.Expr
-	exprs []ast.Expr
+	expr  scm.Expr
+	exprs []scm.Expr
 }
 
 func (l *Lexer) Lex(lval *yySymType) int {
@@ -423,15 +423,15 @@ func (l *Lexer) Error(e string) {
 	l.e = &Error{Message: e, Pos: l.pos, Fatal: false}
 }
 
-func Parse(s *Scanner) ([]ast.Expr, error) {
-	l := Lexer{s: s, exprs: []ast.Expr{}}
+func Parse(s *Scanner) ([]scm.Expr, error) {
+	l := Lexer{s: s, exprs: []scm.Expr{}}
 	if yyParse(&l) != 0 {
 		return nil, l.e
 	}
 	return l.exprs, l.e
 }
 
-func Read(src string) ([]ast.Expr, error) {
+func Read(src string) ([]scm.Expr, error) {
 	scanner := &Scanner{
 		src: []rune(src),
 	}

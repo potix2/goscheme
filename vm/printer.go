@@ -3,7 +3,7 @@ package vm
 import (
 	"io"
 
-	"github.com/potix2/goscheme/ast"
+	"github.com/potix2/goscheme/scm"
 )
 
 type Error struct {
@@ -14,6 +14,6 @@ func (e *Error) Error() string {
 	return e.Message
 }
 
-func Print(output io.Writer, expr ast.Expr) {
+func Print(output io.Writer, expr scm.Expr) {
 	expr.Print(output)
 }
