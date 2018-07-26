@@ -6,7 +6,7 @@ import (
 	"github.com/potix2/goscheme/scm"
 )
 
-func boolNot(args []scm.Expr) (scm.Expr, error) {
+func boolNot(args []scm.Object) (scm.Object, error) {
 	if len(args) != 1 {
 		return nil, &Error{Message: fmt.Sprintf("not requires 1, but got %d", len(args))}
 	}
@@ -20,7 +20,7 @@ func boolNot(args []scm.Expr) (scm.Expr, error) {
 	return scm.BooleanExpr{false}, nil
 }
 
-func boolIsBoolean(args []scm.Expr) (scm.Expr, error) {
+func boolIsBoolean(args []scm.Object) (scm.Object, error) {
 	if len(args) != 1 {
 		return nil, &Error{Message: fmt.Sprintf("not requires 1, but got %d", len(args))}
 	}
@@ -32,7 +32,7 @@ func boolIsBoolean(args []scm.Expr) (scm.Expr, error) {
 	}
 }
 
-func boolIsProcedure(args []scm.Expr) (scm.Expr, error) {
+func boolIsProcedure(args []scm.Object) (scm.Object, error) {
 	if len(args) != 1 {
 		return nil, &Error{Message: fmt.Sprintf("not requires 1, but got %d", len(args))}
 	}

@@ -7,8 +7,8 @@ import (
 %}
 
 %union{
-    exprs []scm.Expr
-    expr  scm.Expr
+    exprs []scm.Object
+    expr  scm.Object
     tok   Token
 }
 
@@ -28,12 +28,12 @@ program:
 commands:
         command
         {
-            $$ = append([]scm.Expr{$1})
+            $$ = append([]scm.Object{$1})
         }
         |
         command commands
         {
-            $$ = append([]scm.Expr{$1}, $2...)
+            $$ = append([]scm.Object{$1}, $2...)
         }
 
 command: expr
@@ -56,7 +56,7 @@ simple_datum : bool | number | symbol
 compound_datum :
                '(' ')'
                {
-                    $$ = scm.MakeListFromSlice([]scm.Expr{})
+                    $$ = scm.MakeListFromSlice([]scm.Object{})
                     if l, ok := yylex.(*Lexer); ok { l.expr = $$ }
                }
                | '(' data ')'
@@ -75,11 +75,11 @@ compound_datum :
 data :
      datum
      {
-        $$ = append([]scm.Expr{$1})
+        $$ = append([]scm.Object{$1})
      }
      | datum data
      {
-        $$ = append([]scm.Expr{$1}, $2...)
+        $$ = append([]scm.Object{$1}, $2...)
      }
 
 symbol : identifier
@@ -114,22 +114,22 @@ string : STRING
 proc_call :
         '(' expr ')'
         {
-            $$ = scm.AppExpr{Exprs: []scm.Expr{$2}}
+            $$ = scm.AppExpr{Objs: []scm.Object{$2}}
             if l, ok := yylex.(*Lexer); ok { l.expr = $$ }
         }
         | '(' expr operands ')'
         {
-            $$ = scm.AppExpr{Exprs: append([]scm.Expr{$2}, $3...)}
+            $$ = scm.AppExpr{Objs: append([]scm.Object{$2}, $3...)}
             if l, ok := yylex.(*Lexer); ok { l.expr = $$ }
         }
 operands :
          expr
          {
-            $$ = append([]scm.Expr{$1})
+            $$ = append([]scm.Object{$1})
          }
          |
          expr operands
          {
-            $$ = append([]scm.Expr{$1}, $2...)
+            $$ = append([]scm.Object{$1}, $2...)
          }
 %%

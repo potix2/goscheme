@@ -58,9 +58,9 @@ func lookup(p string) (string, error) {
 */
 
 /*
-func libImport(args []scm.Expr) (scm.Expr, error) {
+func libImport(args []scm.Object) (scm.Object, error) {
 }
 
-func libExport(args []scm.Expr) (scm.Expr, error) {
+func libExport(args []scm.Object) (scm.Object, error) {
 }
 */

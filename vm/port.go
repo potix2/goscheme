@@ -6,19 +6,19 @@ import (
 	"github.com/potix2/goscheme/scm"
 )
 
-func portCurrentInputPort(args []scm.Expr) (scm.Expr, error) {
+func portCurrentInputPort(args []scm.Object) (scm.Object, error) {
 	return CurrentVM.Input, nil
 }
 
-func portCurrentOutputPort(args []scm.Expr) (scm.Expr, error) {
+func portCurrentOutputPort(args []scm.Object) (scm.Object, error) {
 	return CurrentVM.Output, nil
 }
 
-func portCurrentErrorPort(args []scm.Expr) (scm.Expr, error) {
+func portCurrentErrorPort(args []scm.Object) (scm.Object, error) {
 	return CurrentVM.Error, nil
 }
 
-func implWriteString(p scm.OutputPort, s scm.StringExpr) (scm.Expr, error) {
+func implWriteString(p scm.OutputPort, s scm.StringExpr) (scm.Object, error) {
 	n, err := p.Writer.Write([]byte(s))
 	if err != nil {
 		return nil, &Error{Message: fmt.Sprintf("failed to write: %v", err)}
@@ -30,7 +30,7 @@ func implWriteString(p scm.OutputPort, s scm.StringExpr) (scm.Expr, error) {
 	return scm.Undefined{}, nil
 }
 
-func portWriteString(args []scm.Expr) (scm.Expr, error) {
+func portWriteString(args []scm.Object) (scm.Object, error) {
 	if len(args) == 0 {
 		return nil, &Error{Message: fmt.Sprintf("required at lescm 1, but got %d", len(args))}
 	}
@@ -71,7 +71,7 @@ func portWriteString(args []scm.Expr) (scm.Expr, error) {
 	return implWriteString(port, s)
 }
 
-func portDisplay(args []scm.Expr) (scm.Expr, error) {
+func portDisplay(args []scm.Object) (scm.Object, error) {
 	if len(args) == 0 {
 		return nil, &Error{Message: fmt.Sprintf("required at lescm 1, but got %d", len(args))}
 	}
@@ -97,7 +97,7 @@ func portDisplay(args []scm.Expr) (scm.Expr, error) {
 	return implWriteString(port, s)
 }
 
-func portNewline(args []scm.Expr) (scm.Expr, error) {
+func portNewline(args []scm.Object) (scm.Object, error) {
 	port := CurrentVM.Output
 	var ok bool
 	if len(args) == 1 {
@@ -109,7 +109,7 @@ func portNewline(args []scm.Expr) (scm.Expr, error) {
 	return implWriteString(port, "\n")
 }
 
-func portIsInputPort(args []scm.Expr) (scm.Expr, error) {
+func portIsInputPort(args []scm.Object) (scm.Object, error) {
 	if len(args) != 1 {
 		return nil, &Error{Message: fmt.Sprintf("required 1, but got %d", len(args))}
 	}
@@ -120,7 +120,7 @@ func portIsInputPort(args []scm.Expr) (scm.Expr, error) {
 	}
 }
 
-func portIsOutputPort(args []scm.Expr) (scm.Expr, error) {
+func portIsOutputPort(args []scm.Object) (scm.Object, error) {
 	if len(args) != 1 {
 		return nil, &Error{Message: fmt.Sprintf("required 1, but got %d", len(args))}
 	}
@@ -131,7 +131,7 @@ func portIsOutputPort(args []scm.Expr) (scm.Expr, error) {
 	}
 }
 
-func portIsTextualPort(args []scm.Expr) (scm.Expr, error) {
+func portIsTextualPort(args []scm.Object) (scm.Object, error) {
 	if len(args) != 1 {
 		return nil, &Error{Message: fmt.Sprintf("required 1, but got %d", len(args))}
 	}
@@ -147,7 +147,7 @@ func portIsTextualPort(args []scm.Expr) (scm.Expr, error) {
 	}
 }
 
-func portIsBinaryPort(args []scm.Expr) (scm.Expr, error) {
+func portIsBinaryPort(args []scm.Object) (scm.Object, error) {
 	if len(args) != 1 {
 		return nil, &Error{Message: fmt.Sprintf("required 1, but got %d", len(args))}
 	}
@@ -163,7 +163,7 @@ func portIsBinaryPort(args []scm.Expr) (scm.Expr, error) {
 	}
 }
 
-func portIsPort(args []scm.Expr) (scm.Expr, error) {
+func portIsPort(args []scm.Object) (scm.Object, error) {
 	if len(args) != 1 {
 		return nil, &Error{Message: fmt.Sprintf("required 1, but got %d", len(args))}
 	}

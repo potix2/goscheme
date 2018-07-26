@@ -11,8 +11,8 @@ import (
 
 type yySymType struct {
 	yys   int
-	exprs []scm.Expr
-	expr  scm.Expr
+	exprs []scm.Object
+	expr  scm.Object
 	tok   Token
 }
 
@@ -425,11 +425,11 @@ yynewstate:
 		}
 	case 2:
 		{
-			yyVAL.exprs = append([]scm.Expr{yyS[yypt-0].expr})
+			yyVAL.exprs = append([]scm.Object{yyS[yypt-0].expr})
 		}
 	case 3:
 		{
-			yyVAL.exprs = append([]scm.Expr{yyS[yypt-1].expr}, yyS[yypt-0].exprs...)
+			yyVAL.exprs = append([]scm.Object{yyS[yypt-1].expr}, yyS[yypt-0].exprs...)
 		}
 	case 12:
 		{
@@ -440,7 +440,7 @@ yynewstate:
 		}
 	case 18:
 		{
-			yyVAL.expr = scm.MakeListFromSlice([]scm.Expr{})
+			yyVAL.expr = scm.MakeListFromSlice([]scm.Object{})
 			if l, ok := yylex.(*Lexer); ok {
 				l.expr = yyVAL.expr
 			}
@@ -463,11 +463,11 @@ yynewstate:
 		}
 	case 21:
 		{
-			yyVAL.exprs = append([]scm.Expr{yyS[yypt-0].expr})
+			yyVAL.exprs = append([]scm.Object{yyS[yypt-0].expr})
 		}
 	case 22:
 		{
-			yyVAL.exprs = append([]scm.Expr{yyS[yypt-1].expr}, yyS[yypt-0].exprs...)
+			yyVAL.exprs = append([]scm.Object{yyS[yypt-1].expr}, yyS[yypt-0].exprs...)
 		}
 	case 24:
 		{
@@ -500,25 +500,25 @@ yynewstate:
 		}
 	case 28:
 		{
-			yyVAL.expr = scm.AppExpr{Exprs: []scm.Expr{yyS[yypt-1].expr}}
+			yyVAL.expr = scm.AppExpr{Objs: []scm.Object{yyS[yypt-1].expr}}
 			if l, ok := yylex.(*Lexer); ok {
 				l.expr = yyVAL.expr
 			}
 		}
 	case 29:
 		{
-			yyVAL.expr = scm.AppExpr{Exprs: append([]scm.Expr{yyS[yypt-2].expr}, yyS[yypt-1].exprs...)}
+			yyVAL.expr = scm.AppExpr{Objs: append([]scm.Object{yyS[yypt-2].expr}, yyS[yypt-1].exprs...)}
 			if l, ok := yylex.(*Lexer); ok {
 				l.expr = yyVAL.expr
 			}
 		}
 	case 30:
 		{
-			yyVAL.exprs = append([]scm.Expr{yyS[yypt-0].expr})
+			yyVAL.exprs = append([]scm.Object{yyS[yypt-0].expr})
 		}
 	case 31:
 		{
-			yyVAL.exprs = append([]scm.Expr{yyS[yypt-1].expr}, yyS[yypt-0].exprs...)
+			yyVAL.exprs = append([]scm.Object{yyS[yypt-1].expr}, yyS[yypt-0].exprs...)
 		}
 
 	}

@@ -6,7 +6,7 @@ import (
 	"github.com/potix2/goscheme/scm"
 )
 
-func arithAdd(args []scm.Expr) (scm.Expr, error) {
+func arithAdd(args []scm.Object) (scm.Object, error) {
 	var ret scm.Number
 	ret = scm.IntNum(0)
 	for _, a := range args {
@@ -19,7 +19,7 @@ func arithAdd(args []scm.Expr) (scm.Expr, error) {
 	return ret, nil
 }
 
-func arithSub(args []scm.Expr) (scm.Expr, error) {
+func arithSub(args []scm.Object) (scm.Object, error) {
 	var ret scm.Number
 	ret, ok := args[0].(scm.Number)
 	if !ok {
@@ -36,7 +36,7 @@ func arithSub(args []scm.Expr) (scm.Expr, error) {
 	return ret, nil
 }
 
-func arithMul(args []scm.Expr) (scm.Expr, error) {
+func arithMul(args []scm.Object) (scm.Object, error) {
 	var ret scm.Number
 	ret = scm.IntNum(1)
 	for _, a := range args {
@@ -49,7 +49,7 @@ func arithMul(args []scm.Expr) (scm.Expr, error) {
 	return ret, nil
 }
 
-func arithDiv(args []scm.Expr) (scm.Expr, error) {
+func arithDiv(args []scm.Object) (scm.Object, error) {
 	if len(args) == 0 {
 		return nil, &Error{Message: "this procedure requires at lescm one argument"}
 	}
@@ -66,13 +66,13 @@ func arithDiv(args []scm.Expr) (scm.Expr, error) {
 	return ret, nil
 }
 
-func arithEqual(args []scm.Expr) (scm.Expr, error) {
+func arithEqual(args []scm.Object) (scm.Object, error) {
 	l := args[0].(scm.Number)
 	r := args[1].(scm.Number)
 	return scm.BooleanExpr{scm.EqNum(l, r)}, nil
 }
 
-func arithGreaterThan(args []scm.Expr) (scm.Expr, error) {
+func arithGreaterThan(args []scm.Object) (scm.Object, error) {
 	l := args[0].(scm.Number)
 	r := args[1].(scm.Number)
 	if _, ok := l.(scm.CompNum); ok {
@@ -85,7 +85,7 @@ func arithGreaterThan(args []scm.Expr) (scm.Expr, error) {
 	return scm.BooleanExpr{scm.GTNum(l, r)}, nil
 }
 
-func arithLessThan(args []scm.Expr) (scm.Expr, error) {
+func arithLessThan(args []scm.Object) (scm.Object, error) {
 	l := args[0].(scm.Number)
 	r := args[1].(scm.Number)
 	if _, ok := l.(scm.CompNum); ok {
@@ -98,7 +98,7 @@ func arithLessThan(args []scm.Expr) (scm.Expr, error) {
 	return scm.BooleanExpr{scm.LTNum(l, r)}, nil
 }
 
-func arithGreaterThanEuqal(args []scm.Expr) (scm.Expr, error) {
+func arithGreaterThanEuqal(args []scm.Object) (scm.Object, error) {
 	l := args[0].(scm.Number)
 	r := args[1].(scm.Number)
 	if _, ok := l.(scm.CompNum); ok {
@@ -111,7 +111,7 @@ func arithGreaterThanEuqal(args []scm.Expr) (scm.Expr, error) {
 	return scm.BooleanExpr{scm.GTENum(l, r)}, nil
 }
 
-func arithLessThanEqual(args []scm.Expr) (scm.Expr, error) {
+func arithLessThanEqual(args []scm.Object) (scm.Object, error) {
 	l := args[0].(scm.Number)
 	r := args[1].(scm.Number)
 	if _, ok := l.(scm.CompNum); ok {
@@ -124,7 +124,7 @@ func arithLessThanEqual(args []scm.Expr) (scm.Expr, error) {
 	return scm.BooleanExpr{scm.LTENum(l, r)}, nil
 }
 
-func implIsNumber(expr scm.Expr) bool {
+func implIsNumber(expr scm.Object) bool {
 	switch expr.(type) {
 	case scm.IntNum, scm.RealNum, scm.RatNum, scm.CompNum:
 		return true
@@ -133,14 +133,14 @@ func implIsNumber(expr scm.Expr) bool {
 	}
 }
 
-func arithIsNumber(args []scm.Expr) (scm.Expr, error) {
+func arithIsNumber(args []scm.Object) (scm.Object, error) {
 	if len(args) != 1 {
 		return nil, &Error{Message: fmt.Sprintf("requires 1, but got %d", len(args))}
 	}
 	return scm.BooleanExpr{implIsNumber(args[0])}, nil
 }
 
-func arithNumberToString(args []scm.Expr) (scm.Expr, error) {
+func arithNumberToString(args []scm.Object) (scm.Object, error) {
 	if len(args) != 1 {
 		return nil, &Error{Message: fmt.Sprintf("requires 1, but got %d", len(args))}
 	}
@@ -151,7 +151,7 @@ func arithNumberToString(args []scm.Expr) (scm.Expr, error) {
 	}
 }
 
-func arithStringToNumber(args []scm.Expr) (scm.Expr, error) {
+func arithStringToNumber(args []scm.Object) (scm.Object, error) {
 	if len(args) != 1 {
 		return nil, &Error{Message: fmt.Sprintf("requires 1, but got %d", len(args))}
 	}

@@ -403,8 +403,8 @@ type Lexer struct {
 	lit   string
 	pos   Position
 	e     error
-	expr  scm.Expr
-	exprs []scm.Expr
+	expr  scm.Object
+	exprs []scm.Object
 }
 
 func (l *Lexer) Lex(lval *yySymType) int {
@@ -423,15 +423,15 @@ func (l *Lexer) Error(e string) {
 	l.e = &Error{Message: e, Pos: l.pos, Fatal: false}
 }
 
-func Parse(s *Scanner) ([]scm.Expr, error) {
-	l := Lexer{s: s, exprs: []scm.Expr{}}
+func Parse(s *Scanner) ([]scm.Object, error) {
+	l := Lexer{s: s, exprs: []scm.Object{}}
 	if yyParse(&l) != 0 {
 		return nil, l.e
 	}
 	return l.exprs, l.e
 }
 
-func Read(src string) ([]scm.Expr, error) {
+func Read(src string) ([]scm.Object, error) {
 	scanner := &Scanner{
 		src: []rune(src),
 	}

@@ -14,6 +14,6 @@ func (e *Error) Error() string {
 	return e.Message
 }
 
-func Print(output io.Writer, expr scm.Expr) {
+func Print(output io.Writer, expr scm.Object) {
 	expr.Print(output)
 }

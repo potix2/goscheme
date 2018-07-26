@@ -17,7 +17,7 @@ type Number interface {
 	Sub(Number) Number
 	Mul(Number) Number
 	Div(Number) Number
-	Expr
+	Object
 }
 
 type IntNum int
@@ -358,7 +358,7 @@ func StringToNumber(s string) Number {
 	return stringToNumberImpl(s, radix, exact)
 }
 
-func NumberToString(e Expr) StringExpr {
+func NumberToString(e Object) StringExpr {
 	var buf bytes.Buffer
 	e.Print(&buf)
 	return StringExpr(buf.String())

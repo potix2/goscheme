@@ -14,7 +14,7 @@ import (
 //  (lambda (y) (+ x y))) 2)
 // =>
 //(lambda (y) (+ x y)) {env: x = 2}
-func evalProgram(exprs []scm.Expr, env *scm.Env) (scm.Expr, error) {
+func evalProgram(exprs []scm.Object, env *scm.Env) (scm.Object, error) {
 	logrus.WithFields(logrus.Fields{
 		"expr": dumpExpr(scm.AppExpr{exprs}),
 		"env":  dumpEnv(env),
@@ -36,8 +36,8 @@ func evalProgram(exprs []scm.Expr, env *scm.Env) (scm.Expr, error) {
 			//(define (<variable> . <formal>) <body>)
 			//    => (define <variable> (lambda <formal> <body>))
 			if formals, ok := exprs[1].(scm.AppExpr); ok {
-				if variable, ok := formals.Exprs[0].(scm.IdentExpr); ok {
-					env.Bind(variable.Lit, scm.LambdaExpr{scm.AppExpr{formals.Exprs[1:]}, exprs[2:], env})
+				if variable, ok := formals.Objs[0].(scm.IdentExpr); ok {
+					env.Bind(variable.Lit, scm.LambdaExpr{scm.AppExpr{formals.Objs[1:]}, exprs[2:], env})
 					return variable, nil
 				}
 			}
@@ -86,7 +86,7 @@ func evalProgram(exprs []scm.Expr, env *scm.Env) (scm.Expr, error) {
 				return nil, &Error{Message: fmt.Sprintf("required at lescm 1, but got %d", len(exprs)-1)}
 			}
 
-			var ret scm.Expr
+			var ret scm.Object
 			var err error
 			for _, e := range exprs[1:] {
 				ret, err = Eval(e, env)
@@ -111,25 +111,25 @@ func evalProgram(exprs []scm.Expr, env *scm.Env) (scm.Expr, error) {
 	return apply(op, vals)
 }
 
-func apply(op scm.Expr, vals []scm.Expr) (scm.Expr, error) {
+func apply(op scm.Object, vals []scm.Object) (scm.Object, error) {
 	if p, ok := op.(scm.PrimitiveProcExpr); ok {
 		return p.Proc(vals)
 	}
 
 	if l, ok := op.(scm.LambdaExpr); ok {
 		if vars, ok := l.Args.(scm.AppExpr); ok {
-			if len(vars.Exprs) != len(vals) {
-				return nil, &Error{Message: fmt.Sprintf("expected %d args, but got %d\n", len(vars.Exprs), len(vals))}
+			if len(vars.Objs) != len(vals) {
+				return nil, &Error{Message: fmt.Sprintf("expected %d args, but got %d\n", len(vars.Objs), len(vals))}
 			}
 
-			newEnv := Extend(l.Closure, map[string]scm.Expr{})
-			for i, a := range vars.Exprs {
+			newEnv := Extend(l.Closure, map[string]scm.Object{})
+			for i, a := range vars.Objs {
 				if id, ok := a.(scm.IdentExpr); ok {
 					newEnv.Bind(id.Lit, vals[i])
 				}
 			}
 
-			var ret scm.Expr
+			var ret scm.Object
 			var err error
 			for _, e := range l.Body {
 				ret, err = Eval(e, newEnv)
@@ -141,10 +141,10 @@ func apply(op scm.Expr, vals []scm.Expr) (scm.Expr, error) {
 		}
 
 		if argList, ok := l.Args.(scm.IdentExpr); ok {
-			newEnv := Extend(l.Closure, map[string]scm.Expr{})
+			newEnv := Extend(l.Closure, map[string]scm.Object{})
 			newEnv.Bind(argList.Lit, recMakeListFromSlice(vals))
 
-			var ret scm.Expr
+			var ret scm.Object
 			var err error
 			for _, e := range l.Body {
 				ret, err = Eval(e, newEnv)
@@ -159,7 +159,7 @@ func apply(op scm.Expr, vals []scm.Expr) (scm.Expr, error) {
 	return nil, &Error{Message: fmt.Sprintf("got unapplicable expression: op=%#v, vals=%#v\n", op, vals)}
 }
 
-func Eval(e scm.Expr, env *scm.Env) (scm.Expr, error) {
+func Eval(e scm.Object, env *scm.Env) (scm.Object, error) {
 	logrus.WithFields(logrus.Fields{
 		"expr": dumpExpr(e),
 		"env":  dumpEnv(env),
@@ -171,7 +171,7 @@ func Eval(e scm.Expr, env *scm.Env) (scm.Expr, error) {
 
 	//eval(op operands) => (apply eval(op) operands)
 	if a, ok := e.(scm.AppExpr); ok {
-		return evalProgram(a.Exprs, env)
+		return evalProgram(a.Objs, env)
 	}
 
 	if qe, ok := e.(scm.QuoteExpr); ok {
@@ -188,8 +188,8 @@ func Eval(e scm.Expr, env *scm.Env) (scm.Expr, error) {
 	return e, nil
 }
 
-func evalValues(args []scm.Expr, env *scm.Env) ([]scm.Expr, error) {
-	ret := make([]scm.Expr, 0, len(args))
+func evalValues(args []scm.Object, env *scm.Env) ([]scm.Object, error) {
+	ret := make([]scm.Object, 0, len(args))
 	for _, arg := range args {
 		v, err := Eval(arg, env)
 		if err != nil {
@@ -200,7 +200,7 @@ func evalValues(args []scm.Expr, env *scm.Env) ([]scm.Expr, error) {
 	return ret, nil
 }
 
-func isVariable(e scm.Expr) bool {
+func isVariable(e scm.Object) bool {
 	switch e.(type) {
 	case scm.IntNum, scm.RealNum, scm.RatNum, scm.CompNum, scm.BooleanExpr, scm.PrimitiveProcExpr, scm.InputPort, scm.OutputPort, scm.StringExpr, scm.PairExpr:
 		return true
@@ -209,7 +209,7 @@ func isVariable(e scm.Expr) bool {
 	}
 }
 
-func isList(e scm.Expr) bool {
+func isList(e scm.Object) bool {
 	if p, ok := e.(scm.PairExpr); ok {
 		return p.IsList()
 	} else {
@@ -217,7 +217,7 @@ func isList(e scm.Expr) bool {
 	}
 }
 
-func dumpExpr(e scm.Expr) string {
+func dumpExpr(e scm.Object) string {
 	var buf bytes.Buffer
 	e.Print(&buf)
 	return buf.String()

@@ -5,15 +5,15 @@ import (
 )
 
 type Env struct {
-	Values map[string]Expr
+	Values map[string]Object
 	Parent *Env
 }
 
-type Expr interface {
+type Object interface {
 	Print(io.Writer)
 }
 
-type PrimitiveProc func([]Expr) (Expr, error)
+type PrimitiveProc func([]Object) (Object, error)
 
 type StringExpr string
 type (
@@ -24,19 +24,19 @@ type (
 		Lit bool
 	}
 	QuoteExpr struct {
-		Datum Expr
+		Datum Object
 	}
 	PairExpr struct {
-		Car Expr
-		Cdr Expr
+		Car Object
+		Cdr Object
 	}
 	AppExpr struct {
-		Exprs []Expr
+		Objs []Object
 	}
 	//(lambda (x) (+ 1 x))
 	LambdaExpr struct {
-		Args    Expr
-		Body    []Expr
+		Args    Object
+		Body    []Object
 		Closure *Env
 	}
 	//(let
@@ -60,7 +60,7 @@ type (
 	}
 )
 
-func MakeListFromSlice(exprs []Expr) PairExpr {
+func MakeListFromSlice(exprs []Object) PairExpr {
 	if len(exprs) == 0 {
 		return PairExpr{}
 	} else {
@@ -114,9 +114,9 @@ func (x QuoteExpr) Print(output io.Writer) {
 
 func (x AppExpr) Print(output io.Writer) {
 	output.Write([]byte("("))
-	if len(x.Exprs) > 0 {
-		x.Exprs[0].Print(output)
-		for _, op := range x.Exprs[1:] {
+	if len(x.Objs) > 0 {
+		x.Objs[0].Print(output)
+		for _, op := range x.Objs[1:] {
 			output.Write([]byte(" "))
 			op.Print(output)
 		}
@@ -154,11 +154,11 @@ func (e Env) Print(output io.Writer) {
 	output.Write([]byte("#<env>"))
 }
 
-func (e *Env) Bind(name string, value Expr) {
+func (e *Env) Bind(name string, value Object) {
 	e.Values[name] = value
 }
 
-func TypeString(expr Expr) string {
+func TypeString(expr Object) string {
 	switch expr.(type) {
 	case BooleanExpr:
 		return "boolean"

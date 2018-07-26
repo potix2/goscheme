@@ -30,7 +30,7 @@ func implLoad(filename string, env *scm.Env) error {
 
 //(load filename)
 //(load filename environment-specifier)
-func sysLoad(args []scm.Expr) (scm.Expr, error) {
+func sysLoad(args []scm.Object) (scm.Object, error) {
 	if len(args) != 1 {
 		return nil, &Error{Message: fmt.Sprintf("required 1, but got %d", len(args))}
 	}

@@ -7,19 +7,19 @@ import (
 	"github.com/potix2/goscheme/scm"
 )
 
-func implIsString(expr scm.Expr) bool {
+func implIsString(expr scm.Object) bool {
 	_, ok := expr.(scm.StringExpr)
 	return ok
 }
 
-func strIsString(args []scm.Expr) (scm.Expr, error) {
+func strIsString(args []scm.Object) (scm.Object, error) {
 	if len(args) != 1 {
 		return nil, &Error{Message: fmt.Sprintf("requires 1, but got %d", len(args))}
 	}
 	return scm.BooleanExpr{implIsString(args[0])}, nil
 }
 
-func strStringLength(args []scm.Expr) (scm.Expr, error) {
+func strStringLength(args []scm.Object) (scm.Object, error) {
 	if len(args) != 1 {
 		return nil, &Error{Message: fmt.Sprintf("requires 1, but got %d", len(args))}
 	}
@@ -32,7 +32,7 @@ func strStringLength(args []scm.Expr) (scm.Expr, error) {
 
 type strComparator func(scm.StringExpr, scm.StringExpr) bool
 
-func compForAll(args []scm.Expr, comp strComparator) (scm.Expr, error) {
+func compForAll(args []scm.Object, comp strComparator) (scm.Object, error) {
 	if len(args) == 0 {
 		return nil, &Error{Message: "wrong number of arguments"}
 	}
@@ -45,27 +45,27 @@ func compForAll(args []scm.Expr, comp strComparator) (scm.Expr, error) {
 	return scm.BooleanExpr{true}, nil
 }
 
-func strStringEqual(args []scm.Expr) (scm.Expr, error) {
+func strStringEqual(args []scm.Object) (scm.Object, error) {
 	return compForAll(args, func(a, b scm.StringExpr) bool { return a == b })
 }
 
-func strStringLT(args []scm.Expr) (scm.Expr, error) {
+func strStringLT(args []scm.Object) (scm.Object, error) {
 	return compForAll(args, func(a, b scm.StringExpr) bool { return a < b })
 }
 
-func strStringGT(args []scm.Expr) (scm.Expr, error) {
+func strStringGT(args []scm.Object) (scm.Object, error) {
 	return compForAll(args, func(a, b scm.StringExpr) bool { return a > b })
 }
 
-func strStringLTE(args []scm.Expr) (scm.Expr, error) {
+func strStringLTE(args []scm.Object) (scm.Object, error) {
 	return compForAll(args, func(a, b scm.StringExpr) bool { return a <= b })
 }
 
-func strStringGTE(args []scm.Expr) (scm.Expr, error) {
+func strStringGTE(args []scm.Object) (scm.Object, error) {
 	return compForAll(args, func(a, b scm.StringExpr) bool { return a >= b })
 }
 
-func strSubstring(args []scm.Expr) (scm.Expr, error) {
+func strSubstring(args []scm.Object) (scm.Object, error) {
 	if len(args) != 3 {
 		return nil, &Error{Message: fmt.Sprintf("required 3, but got %d", len(args))}
 	}
@@ -87,7 +87,7 @@ func strSubstring(args []scm.Expr) (scm.Expr, error) {
 	return scm.StringExpr(s[start:end]), nil
 }
 
-func strStringAppend(args []scm.Expr) (scm.Expr, error) {
+func strStringAppend(args []scm.Object) (scm.Object, error) {
 	if len(args) == 0 {
 		return nil, &Error{Message: fmt.Sprintf("required at lescm 1, but got %d", len(args))}
 	}

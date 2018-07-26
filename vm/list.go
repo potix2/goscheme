@@ -6,25 +6,25 @@ import (
 	"github.com/potix2/goscheme/scm"
 )
 
-func listCons(args []scm.Expr) (scm.Expr, error) {
+func listCons(args []scm.Object) (scm.Object, error) {
 	return scm.PairExpr{args[0], args[1]}, nil
 }
 
-func listCar(args []scm.Expr) (scm.Expr, error) {
+func listCar(args []scm.Object) (scm.Object, error) {
 	if p, ok := args[0].(scm.PairExpr); ok {
 		return p.Car, nil
 	}
 	return nil, &Error{Message: fmt.Sprintf("pair required, but got %#v", args[0])}
 }
 
-func listCdr(args []scm.Expr) (scm.Expr, error) {
+func listCdr(args []scm.Object) (scm.Object, error) {
 	if p, ok := args[0].(scm.PairExpr); ok {
 		return p.Cdr, nil
 	}
 	return nil, &Error{Message: fmt.Sprintf("pair required, but got %#v", args[0])}
 }
 
-func recMakeListFromSlice(elems []scm.Expr) scm.Expr {
+func recMakeListFromSlice(elems []scm.Object) scm.Object {
 	if len(elems) == 0 {
 		return scm.PairExpr{}
 	} else {
@@ -32,11 +32,11 @@ func recMakeListFromSlice(elems []scm.Expr) scm.Expr {
 	}
 }
 
-func listList(args []scm.Expr) (scm.Expr, error) {
+func listList(args []scm.Object) (scm.Object, error) {
 	return recMakeListFromSlice(args), nil
 }
 
-func listIsPair(args []scm.Expr) (scm.Expr, error) {
+func listIsPair(args []scm.Object) (scm.Object, error) {
 	if len(args) != 1 {
 		return nil, &Error{Message: fmt.Sprintf("not requires 1, but got %d", len(args))}
 	}
@@ -46,7 +46,7 @@ func listIsPair(args []scm.Expr) (scm.Expr, error) {
 	return scm.BooleanExpr{false}, nil
 }
 
-func listIsNull(args []scm.Expr) (scm.Expr, error) {
+func listIsNull(args []scm.Object) (scm.Object, error) {
 	if len(args) != 1 {
 		return nil, &Error{Message: fmt.Sprintf("not requires 1, but got %d", len(args))}
 	}
@@ -58,7 +58,7 @@ func listIsNull(args []scm.Expr) (scm.Expr, error) {
 	return scm.BooleanExpr{false}, nil
 }
 
-func listIsList(args []scm.Expr) (scm.Expr, error) {
+func listIsList(args []scm.Object) (scm.Object, error) {
 	if len(args) != 1 {
 		return nil, &Error{Message: fmt.Sprintf("not requires 1, but got %d", len(args))}
 	}
@@ -68,7 +68,7 @@ func listIsList(args []scm.Expr) (scm.Expr, error) {
 	return scm.BooleanExpr{false}, nil
 }
 
-func recListToSlice(p scm.PairExpr, ret []scm.Expr) []scm.Expr {
+func recListToSlice(p scm.PairExpr, ret []scm.Object) []scm.Object {
 	if p.IsEmptyList() {
 		return ret
 	} else {
@@ -76,7 +76,7 @@ func recListToSlice(p scm.PairExpr, ret []scm.Expr) []scm.Expr {
 	}
 }
 
-func listToSlice(head scm.Expr) []scm.Expr {
-	var ret []scm.Expr
+func listToSlice(head scm.Object) []scm.Object {
+	var ret []scm.Object
 	return recListToSlice(head.(scm.PairExpr), ret)
 }

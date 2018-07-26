@@ -17,10 +17,10 @@ func getInteractionEnvironment() *scm.Env {
 }
 
 func NewEnv() *scm.Env {
-	return &scm.Env{Values: map[string]scm.Expr{}}
+	return &scm.Env{Values: map[string]scm.Object{}}
 }
 
-func Lookup(env *scm.Env, name string) (scm.Expr, error) {
+func Lookup(env *scm.Env, name string) (scm.Object, error) {
 	e := env
 	for e != nil {
 		if expr, ok := e.Values[name]; ok {
@@ -32,18 +32,18 @@ func Lookup(env *scm.Env, name string) (scm.Expr, error) {
 	return nil, &Error{Message: fmt.Sprintf("Unbound Variable: %s", name)}
 }
 
-func Extend(env *scm.Env, vals map[string]scm.Expr) *scm.Env {
+func Extend(env *scm.Env, vals map[string]scm.Object) *scm.Env {
 	return &scm.Env{Values: vals, Parent: env}
 }
 
-func envInteractionEnvironment(args []scm.Expr) (scm.Expr, error) {
+func envInteractionEnvironment(args []scm.Object) (scm.Object, error) {
 	if len(args) != 0 {
 		return nil, &Error{Message: fmt.Sprintf("required no args, but got %d", len(args))}
 	}
 	return *getInteractionEnvironment(), nil
 }
 
-func envEval(args []scm.Expr) (scm.Expr, error) {
+func envEval(args []scm.Object) (scm.Object, error) {
 	if len(args) != 2 {
 		return nil, &Error{Message: fmt.Sprintf("required 2, but got %d", len(args))}
 	}
@@ -58,7 +58,7 @@ func envEval(args []scm.Expr) (scm.Expr, error) {
 
 //(apply proc arg1 ... args)
 //  => (proc (append (list arg1 ...) args))
-func envApply(args []scm.Expr) (scm.Expr, error) {
+func envApply(args []scm.Object) (scm.Object, error) {
 	if len(args) < 2 {
 		return nil, &Error{Message: fmt.Sprintf("required at lescm 2, but got %d", len(args))}
 	}
@@ -69,7 +69,7 @@ func envApply(args []scm.Expr) (scm.Expr, error) {
 		return nil, &Error{Message: fmt.Sprintf("expected list, but got %s", scm.TypeString(tail))}
 	}
 
-	var vals []scm.Expr
+	var vals []scm.Object
 	if len(args) >= 3 {
 		vals = append(args[1:len(args)-1], listToSlice(tail)...)
 	} else {

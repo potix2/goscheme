@@ -24,7 +24,7 @@ func TestSimple(t *testing.T) {
 	}
 
 	//{a: 20, {a: 10, x: 100}}
-	env = Extend(env, map[string]scm.Expr{"a": scm.IntNum(20)})
+	env = Extend(env, map[string]scm.Object{"a": scm.IntNum(20)})
 	e, err = Lookup(env, "a")
 	if ue, ok := e.(scm.IntNum); ok {
 		if ue != 20 {
@@ -32,7 +32,7 @@ func TestSimple(t *testing.T) {
 		}
 	}
 	//{b: 30, {a: 20, {a: 10, x: 100}}}
-	env = Extend(env, map[string]scm.Expr{"b": scm.IntNum(30)})
+	env = Extend(env, map[string]scm.Object{"b": scm.IntNum(30)})
 	e, err = Lookup(env, "a")
 	if ue, ok := e.(scm.IntNum); ok {
 		if ue != 20 {
