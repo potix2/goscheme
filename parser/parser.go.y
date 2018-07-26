@@ -45,7 +45,7 @@ self_evaluating : bool | number | string
 quotation :
         '\'' datum
         {
-            $$ = scm.QuoteExpr{$2}
+            $$ = scm.Quote{$2}
             if l, ok := yylex.(*Lexer); ok { l.expr = $$ }
         }
 
@@ -87,7 +87,7 @@ symbol : identifier
 identifier :
         IDENT
         {
-            $$ = scm.IdentExpr{Lit: $1.Lit}
+            $$ = scm.Symbol{Lit: $1.Lit}
             if l, ok := yylex.(*Lexer); ok { l.expr = $$ }
         }
 
@@ -95,7 +95,7 @@ bool :
         BOOLEAN
         {
             lit, _ := strconv.ParseBool($1.Lit)
-            $$ = scm.BooleanExpr{Lit: lit}
+            $$ = scm.Boolean{Lit: lit}
             if l, ok := yylex.(*Lexer); ok { l.expr = $$ }
         }
 
@@ -107,19 +107,19 @@ number : NUMBER
 
 string : STRING
        {
-            $$ = scm.StringExpr($1.Lit)
+            $$ = scm.String($1.Lit)
             if l, ok := yylex.(*Lexer); ok { l.expr = $$ }
        }
 
 proc_call :
         '(' expr ')'
         {
-            $$ = scm.AppExpr{Objs: []scm.Object{$2}}
+            $$ = scm.Subp{Objs: []scm.Object{$2}}
             if l, ok := yylex.(*Lexer); ok { l.expr = $$ }
         }
         | '(' expr operands ')'
         {
-            $$ = scm.AppExpr{Objs: append([]scm.Object{$2}, $3...)}
+            $$ = scm.Subp{Objs: append([]scm.Object{$2}, $3...)}
             if l, ok := yylex.(*Lexer); ok { l.expr = $$ }
         }
 operands :

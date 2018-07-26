@@ -7,18 +7,18 @@ import (
 )
 
 func listCons(args []scm.Object) (scm.Object, error) {
-	return scm.PairExpr{args[0], args[1]}, nil
+	return scm.Pair{args[0], args[1]}, nil
 }
 
 func listCar(args []scm.Object) (scm.Object, error) {
-	if p, ok := args[0].(scm.PairExpr); ok {
+	if p, ok := args[0].(scm.Pair); ok {
 		return p.Car, nil
 	}
 	return nil, &Error{Message: fmt.Sprintf("pair required, but got %#v", args[0])}
 }
 
 func listCdr(args []scm.Object) (scm.Object, error) {
-	if p, ok := args[0].(scm.PairExpr); ok {
+	if p, ok := args[0].(scm.Pair); ok {
 		return p.Cdr, nil
 	}
 	return nil, &Error{Message: fmt.Sprintf("pair required, but got %#v", args[0])}
@@ -26,9 +26,9 @@ func listCdr(args []scm.Object) (scm.Object, error) {
 
 func recMakeListFromSlice(elems []scm.Object) scm.Object {
 	if len(elems) == 0 {
-		return scm.PairExpr{}
+		return scm.Pair{}
 	} else {
-		return scm.PairExpr{elems[0], recMakeListFromSlice(elems[1:])}
+		return scm.Pair{elems[0], recMakeListFromSlice(elems[1:])}
 	}
 }
 
@@ -40,43 +40,43 @@ func listIsPair(args []scm.Object) (scm.Object, error) {
 	if len(args) != 1 {
 		return nil, &Error{Message: fmt.Sprintf("not requires 1, but got %d", len(args))}
 	}
-	if _, ok := args[0].(scm.PairExpr); ok {
-		return scm.BooleanExpr{true}, nil
+	if _, ok := args[0].(scm.Pair); ok {
+		return scm.Boolean{true}, nil
 	}
-	return scm.BooleanExpr{false}, nil
+	return scm.Boolean{false}, nil
 }
 
 func listIsNull(args []scm.Object) (scm.Object, error) {
 	if len(args) != 1 {
 		return nil, &Error{Message: fmt.Sprintf("not requires 1, but got %d", len(args))}
 	}
-	if p, ok := args[0].(scm.PairExpr); ok {
+	if p, ok := args[0].(scm.Pair); ok {
 		if p.IsEmptyList() {
-			return scm.BooleanExpr{true}, nil
+			return scm.Boolean{true}, nil
 		}
 	}
-	return scm.BooleanExpr{false}, nil
+	return scm.Boolean{false}, nil
 }
 
 func listIsList(args []scm.Object) (scm.Object, error) {
 	if len(args) != 1 {
 		return nil, &Error{Message: fmt.Sprintf("not requires 1, but got %d", len(args))}
 	}
-	if p, ok := args[0].(scm.PairExpr); ok {
-		return scm.BooleanExpr{p.IsList()}, nil
+	if p, ok := args[0].(scm.Pair); ok {
+		return scm.Boolean{p.IsList()}, nil
 	}
-	return scm.BooleanExpr{false}, nil
+	return scm.Boolean{false}, nil
 }
 
-func recListToSlice(p scm.PairExpr, ret []scm.Object) []scm.Object {
+func recListToSlice(p scm.Pair, ret []scm.Object) []scm.Object {
 	if p.IsEmptyList() {
 		return ret
 	} else {
-		return recListToSlice(p.Cdr.(scm.PairExpr), append(ret, p.Car))
+		return recListToSlice(p.Cdr.(scm.Pair), append(ret, p.Car))
 	}
 }
 
 func listToSlice(head scm.Object) []scm.Object {
 	var ret []scm.Object
-	return recListToSlice(head.(scm.PairExpr), ret)
+	return recListToSlice(head.(scm.Pair), ret)
 }

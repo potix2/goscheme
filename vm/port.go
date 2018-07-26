@@ -18,7 +18,7 @@ func portCurrentErrorPort(args []scm.Object) (scm.Object, error) {
 	return CurrentVM.Error, nil
 }
 
-func implWriteString(p scm.OutputPort, s scm.StringExpr) (scm.Object, error) {
+func implWriteString(p scm.OutputPort, s scm.String) (scm.Object, error) {
 	n, err := p.Writer.Write([]byte(s))
 	if err != nil {
 		return nil, &Error{Message: fmt.Sprintf("failed to write: %v", err)}
@@ -34,7 +34,7 @@ func portWriteString(args []scm.Object) (scm.Object, error) {
 	if len(args) == 0 {
 		return nil, &Error{Message: fmt.Sprintf("required at lescm 1, but got %d", len(args))}
 	}
-	s, ok := args[0].(scm.StringExpr)
+	s, ok := args[0].(scm.String)
 	if !ok {
 		return nil, &Error{Message: fmt.Sprintf("expected string, but got %s", scm.TypeString(args[0]))}
 	}
@@ -77,7 +77,7 @@ func portDisplay(args []scm.Object) (scm.Object, error) {
 	}
 
 	e := args[0]
-	s := scm.StringExpr(dumpExpr(e))
+	s := scm.String(dumpExpr(e))
 
 	var ok bool
 	port := CurrentVM.Output
@@ -107,9 +107,9 @@ func portIsInputPort(args []scm.Object) (scm.Object, error) {
 		return nil, &Error{Message: fmt.Sprintf("required 1, but got %d", len(args))}
 	}
 	if _, ok := args[0].(scm.InputPort); ok {
-		return scm.BooleanExpr{true}, nil
+		return scm.Boolean{true}, nil
 	} else {
-		return scm.BooleanExpr{false}, nil
+		return scm.Boolean{false}, nil
 	}
 }
 
@@ -118,9 +118,9 @@ func portIsOutputPort(args []scm.Object) (scm.Object, error) {
 		return nil, &Error{Message: fmt.Sprintf("required 1, but got %d", len(args))}
 	}
 	if _, ok := args[0].(scm.OutputPort); ok {
-		return scm.BooleanExpr{true}, nil
+		return scm.Boolean{true}, nil
 	} else {
-		return scm.BooleanExpr{false}, nil
+		return scm.Boolean{false}, nil
 	}
 }
 
@@ -131,12 +131,12 @@ func portIsTextualPort(args []scm.Object) (scm.Object, error) {
 	switch args[0].(type) {
 	case scm.OutputPort:
 		p := args[0].(scm.OutputPort)
-		return scm.BooleanExpr{!p.Binary}, nil
+		return scm.Boolean{!p.Binary}, nil
 	case scm.InputPort:
 		p := args[0].(scm.InputPort)
-		return scm.BooleanExpr{!p.Binary}, nil
+		return scm.Boolean{!p.Binary}, nil
 	default:
-		return scm.BooleanExpr{false}, nil
+		return scm.Boolean{false}, nil
 	}
 }
 
@@ -147,12 +147,12 @@ func portIsBinaryPort(args []scm.Object) (scm.Object, error) {
 	switch args[0].(type) {
 	case scm.OutputPort:
 		p := args[0].(scm.OutputPort)
-		return scm.BooleanExpr{p.Binary}, nil
+		return scm.Boolean{p.Binary}, nil
 	case scm.InputPort:
 		p := args[0].(scm.InputPort)
-		return scm.BooleanExpr{p.Binary}, nil
+		return scm.Boolean{p.Binary}, nil
 	default:
-		return scm.BooleanExpr{false}, nil
+		return scm.Boolean{false}, nil
 	}
 }
 
@@ -162,10 +162,10 @@ func portIsPort(args []scm.Object) (scm.Object, error) {
 	}
 	switch args[0].(type) {
 	case scm.OutputPort:
-		return scm.BooleanExpr{true}, nil
+		return scm.Boolean{true}, nil
 	case scm.InputPort:
-		return scm.BooleanExpr{true}, nil
+		return scm.Boolean{true}, nil
 	default:
-		return scm.BooleanExpr{false}, nil
+		return scm.Boolean{false}, nil
 	}
 }

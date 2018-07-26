@@ -433,7 +433,7 @@ yynewstate:
 		}
 	case 12:
 		{
-			yyVAL.expr = scm.QuoteExpr{yyS[yypt-0].expr}
+			yyVAL.expr = scm.Quote{yyS[yypt-0].expr}
 			if l, ok := yylex.(*Lexer); ok {
 				l.expr = yyVAL.expr
 			}
@@ -471,7 +471,7 @@ yynewstate:
 		}
 	case 24:
 		{
-			yyVAL.expr = scm.IdentExpr{Lit: yyS[yypt-0].tok.Lit}
+			yyVAL.expr = scm.Symbol{Lit: yyS[yypt-0].tok.Lit}
 			if l, ok := yylex.(*Lexer); ok {
 				l.expr = yyVAL.expr
 			}
@@ -479,7 +479,7 @@ yynewstate:
 	case 25:
 		{
 			lit, _ := strconv.ParseBool(yyS[yypt-0].tok.Lit)
-			yyVAL.expr = scm.BooleanExpr{Lit: lit}
+			yyVAL.expr = scm.Boolean{Lit: lit}
 			if l, ok := yylex.(*Lexer); ok {
 				l.expr = yyVAL.expr
 			}
@@ -493,21 +493,21 @@ yynewstate:
 		}
 	case 27:
 		{
-			yyVAL.expr = scm.StringExpr(yyS[yypt-0].tok.Lit)
+			yyVAL.expr = scm.String(yyS[yypt-0].tok.Lit)
 			if l, ok := yylex.(*Lexer); ok {
 				l.expr = yyVAL.expr
 			}
 		}
 	case 28:
 		{
-			yyVAL.expr = scm.AppExpr{Objs: []scm.Object{yyS[yypt-1].expr}}
+			yyVAL.expr = scm.Subp{Objs: []scm.Object{yyS[yypt-1].expr}}
 			if l, ok := yylex.(*Lexer); ok {
 				l.expr = yyVAL.expr
 			}
 		}
 	case 29:
 		{
-			yyVAL.expr = scm.AppExpr{Objs: append([]scm.Object{yyS[yypt-2].expr}, yyS[yypt-1].exprs...)}
+			yyVAL.expr = scm.Subp{Objs: append([]scm.Object{yyS[yypt-2].expr}, yyS[yypt-1].exprs...)}
 			if l, ok := yylex.(*Lexer); ok {
 				l.expr = yyVAL.expr
 			}

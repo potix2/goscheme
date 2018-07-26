@@ -4,11 +4,11 @@ import (
 	"github.com/potix2/goscheme/scm"
 )
 
-func makePrimitive(op string, proc scm.PrimitiveProc) scm.PrimitiveProcExpr {
-	return scm.PrimitiveProcExpr{Operator: op, Proc: proc}
+func makePrimitive(op string, proc scm.PrimitiveFunc) scm.PrimitiveProc {
+	return scm.PrimitiveProc{Operator: op, Proc: proc}
 }
 
-func bindPrimitive(e *scm.Env, op string, proc scm.PrimitiveProc) {
+func bindPrimitive(e *scm.Env, op string, proc scm.PrimitiveFunc) {
 	e.Bind(op, makePrimitive(op, proc))
 }
 

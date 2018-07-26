@@ -13,28 +13,28 @@ type Object interface {
 	Print(io.Writer)
 }
 
-type PrimitiveProc func([]Object) (Object, error)
+type PrimitiveFunc func([]Object) (Object, error)
 
-type StringExpr string
+type String string
 type (
-	IdentExpr struct {
+	Symbol struct {
 		Lit string
 	}
-	BooleanExpr struct {
+	Boolean struct {
 		Lit bool
 	}
-	QuoteExpr struct {
+	Quote struct {
 		Datum Object
 	}
-	PairExpr struct {
+	Pair struct {
 		Car Object
 		Cdr Object
 	}
-	AppExpr struct {
+	Subp struct {
 		Objs []Object
 	}
 	//(lambda (x) (+ 1 x))
-	LambdaExpr struct {
+	Lambda struct {
 		Args    Object
 		Body    []Object
 		Closure *Env
@@ -43,9 +43,9 @@ type (
 	//  (x (lambda (a) (+ a 2)))
 	//  (x 2))
 
-	PrimitiveProcExpr struct {
+	PrimitiveProc struct {
 		Operator string
-		Proc     PrimitiveProc
+		Proc     PrimitiveFunc
 	}
 	InputPort struct {
 		Reader io.Reader
@@ -60,19 +60,19 @@ type (
 	}
 )
 
-func MakeListFromSlice(exprs []Object) PairExpr {
+func MakeListFromSlice(exprs []Object) Pair {
 	if len(exprs) == 0 {
-		return PairExpr{}
+		return Pair{}
 	} else {
-		return PairExpr{Car: exprs[0], Cdr: MakeListFromSlice(exprs[1:])}
+		return Pair{Car: exprs[0], Cdr: MakeListFromSlice(exprs[1:])}
 	}
 }
 
-func (x IdentExpr) Print(output io.Writer) {
+func (x Symbol) Print(output io.Writer) {
 	output.Write([]byte(x.Lit))
 }
 
-func (x BooleanExpr) Print(output io.Writer) {
+func (x Boolean) Print(output io.Writer) {
 	if x.Lit {
 		output.Write([]byte("#t"))
 	} else {
@@ -80,7 +80,7 @@ func (x BooleanExpr) Print(output io.Writer) {
 	}
 }
 
-func (x PairExpr) Print(output io.Writer) {
+func (x Pair) Print(output io.Writer) {
 	output.Write([]byte("("))
 	if x.Car != nil {
 		x.Car.Print(output)
@@ -92,27 +92,27 @@ func (x PairExpr) Print(output io.Writer) {
 	output.Write([]byte(")"))
 }
 
-func (x PairExpr) IsEmptyList() bool {
+func (x Pair) IsEmptyList() bool {
 	return x.Car == nil && x.Cdr == nil
 }
 
-func (x PairExpr) IsList() bool {
+func (x Pair) IsList() bool {
 	if x.IsEmptyList() {
 		return true
 	}
 
-	if child, ok := x.Cdr.(PairExpr); ok {
+	if child, ok := x.Cdr.(Pair); ok {
 		return child.IsList()
 	}
 	return false
 }
 
-func (x QuoteExpr) Print(output io.Writer) {
+func (x Quote) Print(output io.Writer) {
 	output.Write([]byte("'"))
 	x.Datum.Print(output)
 }
 
-func (x AppExpr) Print(output io.Writer) {
+func (x Subp) Print(output io.Writer) {
 	output.Write([]byte("("))
 	if len(x.Objs) > 0 {
 		x.Objs[0].Print(output)
@@ -124,13 +124,13 @@ func (x AppExpr) Print(output io.Writer) {
 	output.Write([]byte(")"))
 }
 
-func (x LambdaExpr) Print(output io.Writer) {
+func (x Lambda) Print(output io.Writer) {
 	output.Write([]byte("#<closure (#f"))
 	x.Args.Print(output)
 	output.Write([]byte(")>"))
 }
 
-func (x PrimitiveProcExpr) Print(output io.Writer) {
+func (x PrimitiveProc) Print(output io.Writer) {
 	output.Write([]byte(x.Operator))
 }
 
@@ -146,7 +146,7 @@ func (x OutputPort) Print(output io.Writer) {
 	output.Write([]byte("#<oport>"))
 }
 
-func (x StringExpr) Print(output io.Writer) {
+func (x String) Print(output io.Writer) {
 	output.Write([]byte(x))
 }
 
@@ -160,7 +160,7 @@ func (e *Env) Bind(name string, value Object) {
 
 func TypeString(expr Object) string {
 	switch expr.(type) {
-	case BooleanExpr:
+	case Boolean:
 		return "boolean"
 	case IntNum:
 		return "number"
@@ -168,21 +168,21 @@ func TypeString(expr Object) string {
 		return "number"
 	case RealNum:
 		return "number"
-	case IdentExpr:
+	case Symbol:
 		return "symbol"
-	case StringExpr:
+	case String:
 		return "string"
 	case InputPort:
 		return "port"
 	case OutputPort:
 		return "port"
-	case PairExpr:
+	case Pair:
 		return "pair"
-	case LambdaExpr:
+	case Lambda:
 		return "procedure"
-	case PrimitiveProcExpr:
+	case PrimitiveProc:
 		return "procedure"
-	case QuoteExpr:
+	case Quote:
 		return "quote"
 	case Env:
 		return "env"

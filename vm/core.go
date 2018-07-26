@@ -16,17 +16,17 @@ import (
 //(lambda (y) (+ x y)) {env: x = 2}
 func evalProgram(exprs []scm.Object, env *scm.Env) (scm.Object, error) {
 	logrus.WithFields(logrus.Fields{
-		"expr": dumpExpr(scm.AppExpr{exprs}),
+		"expr": dumpExpr(scm.Subp{exprs}),
 		"env":  dumpEnv(env),
 	}).Debug("evalProgram")
 
-	if op, ok := exprs[0].(scm.IdentExpr); ok {
+	if op, ok := exprs[0].(scm.Symbol); ok {
 		switch op.Lit {
 		case "lambda":
-			return scm.LambdaExpr{exprs[1], exprs[2:], env}, nil
+			return scm.Lambda{exprs[1], exprs[2:], env}, nil
 		case "define":
 			//(define <variable> <expression>)
-			if id, ok := exprs[1].(scm.IdentExpr); ok {
+			if id, ok := exprs[1].(scm.Symbol); ok {
 				if val, err := Eval(exprs[2], env); err == nil {
 					env.Bind(id.Lit, val)
 					return id, nil
@@ -35,14 +35,14 @@ func evalProgram(exprs []scm.Object, env *scm.Env) (scm.Object, error) {
 
 			//(define (<variable> . <formal>) <body>)
 			//    => (define <variable> (lambda <formal> <body>))
-			if formals, ok := exprs[1].(scm.AppExpr); ok {
-				if variable, ok := formals.Objs[0].(scm.IdentExpr); ok {
-					env.Bind(variable.Lit, scm.LambdaExpr{scm.AppExpr{formals.Objs[1:]}, exprs[2:], env})
+			if formals, ok := exprs[1].(scm.Subp); ok {
+				if variable, ok := formals.Objs[0].(scm.Symbol); ok {
+					env.Bind(variable.Lit, scm.Lambda{scm.Subp{formals.Objs[1:]}, exprs[2:], env})
 					return variable, nil
 				}
 			}
 		case "set!":
-			if id, ok := exprs[1].(scm.IdentExpr); ok {
+			if id, ok := exprs[1].(scm.Symbol); ok {
 				if val, err := Eval(exprs[2], env); err == nil {
 					env.Bind(id.Lit, val)
 					return id, nil
@@ -62,7 +62,7 @@ func evalProgram(exprs []scm.Object, env *scm.Env) (scm.Object, error) {
 			if err != nil {
 				return nil, err
 			}
-			if tv, ok := test.(scm.BooleanExpr); ok && !tv.Lit {
+			if tv, ok := test.(scm.Boolean); ok && !tv.Lit {
 				//alternate
 				if len(exprs) == 4 {
 					result, err := Eval(exprs[3], env)
@@ -112,19 +112,19 @@ func evalProgram(exprs []scm.Object, env *scm.Env) (scm.Object, error) {
 }
 
 func apply(op scm.Object, vals []scm.Object) (scm.Object, error) {
-	if p, ok := op.(scm.PrimitiveProcExpr); ok {
+	if p, ok := op.(scm.PrimitiveProc); ok {
 		return p.Proc(vals)
 	}
 
-	if l, ok := op.(scm.LambdaExpr); ok {
-		if vars, ok := l.Args.(scm.AppExpr); ok {
+	if l, ok := op.(scm.Lambda); ok {
+		if vars, ok := l.Args.(scm.Subp); ok {
 			if len(vars.Objs) != len(vals) {
 				return nil, &Error{Message: fmt.Sprintf("expected %d args, but got %d\n", len(vars.Objs), len(vals))}
 			}
 
 			newEnv := Extend(l.Closure, map[string]scm.Object{})
 			for i, a := range vars.Objs {
-				if id, ok := a.(scm.IdentExpr); ok {
+				if id, ok := a.(scm.Symbol); ok {
 					newEnv.Bind(id.Lit, vals[i])
 				}
 			}
@@ -140,7 +140,7 @@ func apply(op scm.Object, vals []scm.Object) (scm.Object, error) {
 			return ret, nil
 		}
 
-		if argList, ok := l.Args.(scm.IdentExpr); ok {
+		if argList, ok := l.Args.(scm.Symbol); ok {
 			newEnv := Extend(l.Closure, map[string]scm.Object{})
 			newEnv.Bind(argList.Lit, recMakeListFromSlice(vals))
 
@@ -170,15 +170,15 @@ func Eval(e scm.Object, env *scm.Env) (scm.Object, error) {
 	}
 
 	//eval(op operands) => (apply eval(op) operands)
-	if a, ok := e.(scm.AppExpr); ok {
+	if a, ok := e.(scm.Subp); ok {
 		return evalProgram(a.Objs, env)
 	}
 
-	if qe, ok := e.(scm.QuoteExpr); ok {
+	if qe, ok := e.(scm.Quote); ok {
 		return qe.Datum, nil
 	}
 
-	if ide, ok := e.(scm.IdentExpr); ok {
+	if ide, ok := e.(scm.Symbol); ok {
 		exp, err := Lookup(env, ide.Lit)
 		if err != nil {
 			return nil, err
@@ -202,7 +202,7 @@ func evalValues(args []scm.Object, env *scm.Env) ([]scm.Object, error) {
 
 func isVariable(e scm.Object) bool {
 	switch e.(type) {
-	case scm.IntNum, scm.RealNum, scm.RatNum, scm.CompNum, scm.BooleanExpr, scm.PrimitiveProcExpr, scm.InputPort, scm.OutputPort, scm.StringExpr, scm.PairExpr:
+	case scm.IntNum, scm.RealNum, scm.RatNum, scm.CompNum, scm.Boolean, scm.PrimitiveProc, scm.InputPort, scm.OutputPort, scm.String, scm.Pair:
 		return true
 	default:
 		return false
@@ -210,7 +210,7 @@ func isVariable(e scm.Object) bool {
 }
 
 func isList(e scm.Object) bool {
-	if p, ok := e.(scm.PairExpr); ok {
+	if p, ok := e.(scm.Pair); ok {
 		return p.IsList()
 	} else {
 		return false

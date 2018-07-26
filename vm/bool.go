@@ -11,13 +11,13 @@ func boolNot(args []scm.Object) (scm.Object, error) {
 		return nil, &Error{Message: fmt.Sprintf("not requires 1, but got %d", len(args))}
 	}
 
-	if b, ok := args[0].(scm.BooleanExpr); ok {
+	if b, ok := args[0].(scm.Boolean); ok {
 		if !b.Lit {
-			return scm.BooleanExpr{true}, nil
+			return scm.Boolean{true}, nil
 		}
 	}
 
-	return scm.BooleanExpr{false}, nil
+	return scm.Boolean{false}, nil
 }
 
 func boolIsBoolean(args []scm.Object) (scm.Object, error) {
@@ -25,10 +25,10 @@ func boolIsBoolean(args []scm.Object) (scm.Object, error) {
 		return nil, &Error{Message: fmt.Sprintf("not requires 1, but got %d", len(args))}
 	}
 
-	if _, ok := args[0].(scm.BooleanExpr); ok {
-		return scm.BooleanExpr{true}, nil
+	if _, ok := args[0].(scm.Boolean); ok {
+		return scm.Boolean{true}, nil
 	} else {
-		return scm.BooleanExpr{false}, nil
+		return scm.Boolean{false}, nil
 	}
 }
 
@@ -37,9 +37,9 @@ func boolIsProcedure(args []scm.Object) (scm.Object, error) {
 		return nil, &Error{Message: fmt.Sprintf("not requires 1, but got %d", len(args))}
 	}
 	switch args[0].(type) {
-	case scm.LambdaExpr, scm.PrimitiveProcExpr:
-		return scm.BooleanExpr{true}, nil
+	case scm.Lambda, scm.PrimitiveProc:
+		return scm.Boolean{true}, nil
 	default:
-		return scm.BooleanExpr{false}, nil
+		return scm.Boolean{false}, nil
 	}
 }

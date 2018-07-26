@@ -35,9 +35,9 @@ func sysLoad(args []scm.Object) (scm.Object, error) {
 		return nil, &Error{Message: fmt.Sprintf("required 1, but got %d", len(args))}
 	}
 
-	var s scm.StringExpr
+	var s scm.String
 	var ok bool
-	if s, ok = args[0].(scm.StringExpr); !ok {
+	if s, ok = args[0].(scm.String); !ok {
 		return nil, &Error{Message: fmt.Sprintf("expected string, but got %s", scm.TypeString(args[0]))}
 	}
 

@@ -358,10 +358,10 @@ func StringToNumber(s string) Number {
 	return stringToNumberImpl(s, radix, exact)
 }
 
-func NumberToString(e Object) StringExpr {
+func NumberToString(e Object) String {
 	var buf bytes.Buffer
 	e.Print(&buf)
-	return StringExpr(buf.String())
+	return String(buf.String())
 }
 
 func stringToNumberImpl(s string, radix int, exact bool) Number {
