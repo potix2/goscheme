@@ -76,15 +76,8 @@ func portDisplay(args []scm.Object) (scm.Object, error) {
 		return nil, &Error{Message: fmt.Sprintf("required at lescm 1, but got %d", len(args))}
 	}
 
-	var s scm.StringExpr
 	e := args[0]
-	if implIsString(e) {
-		s = e.(scm.StringExpr)
-	} else if implIsNumber(e) {
-		s = scm.NumberToString(e)
-	} else {
-		return nil, &Error{Message: fmt.Sprintf("expected string, but got %s", scm.TypeString(args[0]))}
-	}
+	s := scm.StringExpr(dumpExpr(e))
 
 	var ok bool
 	port := CurrentVM.Output
